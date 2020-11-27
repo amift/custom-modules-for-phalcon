@@ -1,0 +1,128 @@
+
+<style>
+
+    .light-well {
+        background-color: #fafafa;
+        padding: 15px;
+        /*min-height: 265px;*/
+    }
+
+    .light-well h4 {
+        color: #333;
+        font-weight: 600;
+        margin-top: 10.5px;
+        margin-bottom: 10.5px;
+        font-family: inherit;
+        line-height: 1.1;
+    }
+    .data a.heading_counter h1 {
+        line-height: 48px;
+        font-size: 48px;
+        padding: 10px;
+        text-align: center;
+        font-weight: normal;
+        -webkit-margin-before: 0.67em;
+        -webkit-margin-after: 0.67em;
+        -webkit-margin-start: 0px;
+        -webkit-margin-end: 0px;
+    }
+    .data a.heading_counter {
+        color: #333;
+        text-decoration: none;
+    }
+
+    .data hr {
+        margin: 16px 0 16px 0;
+        height: 0;
+        border: 0;
+        border-top: 1px solid #eeeeee;
+        box-sizing: content-box;
+    }
+
+</style>
+
+<div class="container">
+    <div class="sp40"></div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-body light-well">
+                    <h4>Articles</h4>
+                    <div class="data">
+                        <a href="<?php echo $this->url->get(['for' => 'articles_list']); ?>" class="heading_counter"><h1><?php echo $articlesCount; ?></h1></a>
+                        <hr>
+                        <a class="btn btn-default" href="<?php echo $this->url->get(['for' => 'articles_list']); ?>">All Articles</a> &nbsp; 
+                        <a class="btn btn-primary" href="<?php echo $this->url->get(['for' => 'articles_add']); ?>">New Article</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-body light-well">
+                    <h4>Polls</h4>
+                    <div class="data">
+                        <a href="<?php echo $this->url->get(['for' => 'polls_list']); ?>" class="heading_counter"><h1><?php echo $pollsCount; ?></h1></a>
+                        <hr>
+                        <a class="btn btn-default" href="<?php echo $this->url->get(['for' => 'polls_list']); ?>">All Polls</a> &nbsp; 
+                        <a class="btn btn-primary" href="<?php echo $this->url->get(['for' => 'polls_add']); ?>">New Poll</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-body light-well">
+                    <h4>Categories</h4>
+                    <div class="data">
+                        <a href="<?php echo $this->url->get(['for' => 'article_categories_list']); ?>" class="heading_counter"><h1><?php echo $categoriesCount; ?></h1></a>
+                        <hr>
+                        <a class="btn btn-default" href="<?php echo $this->url->get(['for' => 'article_categories_list']); ?>">All Categories</a> &nbsp; 
+                        <a class="btn btn-primary" href="<?php echo $this->url->get(['for' => 'article_categories_add']); ?>">New Category</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-body light-well">
+                    <h4>Comments</h4>
+                    <div class="data">
+                        <a href="<?php echo $this->url->get(['for' => 'all_comments_list']); ?>" class="heading_counter"><h1><?php echo $commentsCount; ?></h1></a>
+                        <hr>
+                        <a class="btn btn-default" href="<?php echo $this->url->get(['for' => 'all_comments_list']); ?>">All Comments</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-body light-well">
+                    <h4>Members</h4>
+                    <div class="data">
+                        <a href="<?php echo $this->url->get(['for' => 'members_list']); ?>" class="heading_counter"><h1><?php echo $membersCount; ?></h1></a>
+                        <hr>
+                        <a class="btn btn-default" href="<?php echo $this->url->get(['for' => 'members_list']); ?>">All Members</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-body light-well">
+                    <h4>Withdraws</h4>
+                    <div class="data">
+                        <a href="<?php echo $this->url->get(['for' => 'withdraws_list']); ?>" class="heading_counter"><h1><?php echo $withdrawsCount; ?></h1></a>
+                        <hr>
+                        <a class="btn btn-default" href="<?php echo $this->url->get(['for' => 'withdraws_list']); ?>">All Withdraws</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <div class="c sp20"></div>
+</div>

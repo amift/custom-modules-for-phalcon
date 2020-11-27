@@ -1,0 +1,15 @@
+
+<?php if (!$this->auth->isAuthorised()) : ?>
+            <div class="sign-up-message">
+                <?php echo $this->translator->trans('unauthorised_info_message_in_add_article_form', '<i class="fa fa-male"></i>Lūdzu, <a href="javascript:;" data-toggle="modal" data-target="#Login" title="Autorizēties">autorizējies</a> vai <a href="javascript:;" data-toggle="modal" data-target="#Register" title="Reģistrēties">reģistrējies</a>, lai varētu pievienot rakstu'); ?>
+            </div>
+<?php
+    else : 
+        $member = $this->auth->getAuthorisedUser();
+        if ($member->isBanned() === true && $member->isBannedPosting()) :
+?>
+            <div class="sign-up-message">
+                <?php echo $this->translator->trans('banned_info_message_in_add_article_form', '<i class="fa fa-male"></i>Jums ir liegta pieeja pievienot ziņas! Neskaidrību gadījumā, lūdzam, sazināties ar administrāciju.'); ?>
+            </div>
+<?php   endif; ?>
+<?php endif; ?>

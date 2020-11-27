@@ -1,0 +1,96 @@
+<?php
+
+    use System\Entity\CronJob;
+    use System\Entity\CronJobLog;
+    use System\Tool\CronJobState as State;
+
+    /* @var $cronjob CronJob */
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="<?php echo $this->url->get(['for' => 'cronjobs_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>Cron Job logs</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('cronjobs/partials/cronjob-tabs'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:150px;">Launched At</th>
+                <th style="width:150px;">Finished At</th>
+                <th>Error message</th>
+                <th>Stack Trace</th>
+                <th style="width:65px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    foreach ($paginator as $log) {
+        /* @var $log CronJobLog */
+?>
+            <tr>
+                <td><?php if (is_object($log->getLaunchedAt())) : ?>
+                    <div><?php echo $log->getLaunchedAt()->format('d/m/Y H:i:s'); ?></div>
+                <?php else :
+                        echo '-';
+                    endif;
+                ?></td>
+                <td><?php if (is_object($log->getFinishedAt())) : ?>
+                    <div><?php echo $log->getFinishedAt()->format('d/m/Y H:i:s'); ?></div>
+                <?php else :
+                        echo '-';
+                    endif;
+                ?></td>
+                <td class="error">
+                    <?php echo (string)$log->getErrorMsg() !== '' ? substr($log->getErrorMsg(), 0, 200) . ' ...' : '-'; ?>
+                </td>
+                <td class="trace">
+                    <?php echo (string)$log->getStackTrace() !== '' ? substr($log->getStackTrace(), 0, 200) . ' ...' : '-'; ?>
+                </td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'cronjobs_log_view', 'id' => $log->getId()], 'Details']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, [], $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<style>
+    .error, .trace {
+        font-size: 11px;
+        word-wrap: break-word;
+        word-break: break-all;
+        min-width: 250px;
+    }
+</style>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+        gridFilter.init('<?php echo $this->url->get(['for' => 'cronjobs_log', 'id' => $cronjob->getId()]); ?>');
+    });
+</script>

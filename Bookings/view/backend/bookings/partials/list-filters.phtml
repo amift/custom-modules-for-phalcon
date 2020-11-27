@@ -1,0 +1,57 @@
+
+    <div class="sp15"></div>
+    <div class="table-filters">
+        <div>
+            <div class="filter-group">
+                <label for="type">Type</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "type",
+                        \Bookings\Tool\BookingType::getLabels(),
+                        'value' => $filters['type'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '200px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <label for="action">Action</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "action",
+                        \Bookings\Tool\BookingAction::getLabelsAsOptGroup(),
+                        'value' => $filters['action'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '200px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <div class="form-group w-140">
+                    <label for="dateFrom">Date From</label>
+                    <div class="input-group date datepicker_holder dateFrom_holder" id="dateFrom" data-date-format="DD/MM/YYYY">
+                        <input type="text" class="form-control" name="dateFrom" value="<?php echo $filters['dateFrom']; ?>" >
+                        <span class="input-group-addon datepicker_icon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="form-group w-140">
+                    <label for="dateTo">To</label>
+                    <div class="input-group date datepicker_holder dateTo_holder" id="dateTo" data-date-format="DD/MM/YYYY">
+                        <input type="text" class="form-control" name="dateTo" value="<?php echo $filters['dateTo']; ?>" >
+                        <span class="input-group-addon datepicker_icon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="c"></div>
+            <div class="afterfilter_options">
+                <div class="filter_clear_line">
+                    <a href="javascript:;" class="filter_btn" id="btnFilter">Filter</a>
+                    <a href="javascript:;" class="clear_filter_btn" id="btnClearFilter">Clear filter</a>
+                </div>
+            </div>
+        </div>
+    </div>

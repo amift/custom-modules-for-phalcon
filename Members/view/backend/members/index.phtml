@@ -1,0 +1,125 @@
+<?php
+
+    use Members\Entity\Member;
+    use Members\Entity\TotalPoints;
+    use Members\Tool\Confirmed;
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+            <?php //echo $this->tag->linkTo([['for' => 'members_add'], 'Add new', 'class' => 'btn btn-default w-95']); ?>
+        </div>
+        <h1>Members</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('members/partials/list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:85px;">ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th style="width:125px;">Articles count</th>
+                <th style="width:145px;">Points</th>
+                <th style="width:145px;">Registered</th>
+                <th style="width:145px;">Last Login</th>
+                <th style="width:115px;">Status</th>
+                <th style="width:65px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    foreach ($paginator as $member) { 
+        /* @var $member Member */
+
+        $totals = $member->getTotalPointsData();
+        /* @var $totals TotalPoints */
+        
+        $articlesCount = is_object($member->getArticles()) ? $member->getArticles()->count() : 0;
+?>
+            <tr>
+                <td><?php echo $member->getId(); ?></td>
+                <td><?php echo $member->getUsername(); ?></td>
+                <td><?php echo $member->getEmail(); ?></td>
+                <td><?php
+                    if ($articlesCount > 0) {
+                        $url = $this->url->get(['for' => 'articles_list']) . '?member=' . $member->getId();
+                        echo sprintf('<a href="%s" target="_blank">%s</a>', $url, (string)$articlesCount);
+                    } else {
+                        echo (string)$articlesCount;
+                    }
+                ?></td>
+                <td><?php
+                    if (is_object($totals)) {
+                        echo sprintf(
+                            '<div class="fs-1214">Earned: %s<br>Withdrawed: %s<br>Actual: %s</div>', 
+                            $totals->getTotalEarned(), $totals->getTotalWithdrawed(), $totals->getTotalActual()
+                        );
+                    } else {
+                        echo '-';
+                    }
+                ?></td>
+                <td>
+                    <div><?php echo $member->getCreatedAt()->format('d/m/Y H:i'); ?></div>
+                    <div class="fs-1214"><?php echo ($member->getCreatedFromIp() !== '' ? 'IP: ' . $member->getCreatedFromIp() : ''); ?></div>
+                </td>
+                <td><?php if (is_object($member->getLoginLastAt())) : ?>
+                    <div><?php echo $member->getLoginLastAt()->format('d/m/Y H:i'); ?></div>
+                    <div class="fs-1214"><?php echo ($member->getLoginLastIp() !== '' ? 'IP: ' . $member->getLoginLastIp() : ''); ?></div>
+                <?php else :
+                        echo '-';
+                    endif;
+                ?></td>
+                <td>
+                    <?php echo $this->memberStatus->table($member); ?>
+                    <div class="sp3 c"></div>
+                    <?php echo $this->enableStatus->table($member, Confirmed::getLabels(), Confirmed::getStyles()); ?>
+                </td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'members_view', 'id' => $member->getId()], 'View']); ?>
+                        <?php echo $this->tag->linkTo([['for' => 'members_edit', 'id' => $member->getId()], 'Edit']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Init list filters and search actions
+        gridFilter.init('<?php echo $this->url->get(['for' => 'members_list']); ?>');
+
+    });
+</script>

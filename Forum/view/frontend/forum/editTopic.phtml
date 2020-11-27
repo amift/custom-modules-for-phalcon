@@ -1,0 +1,102 @@
+<?php
+
+    use Translations\Tool\Group;
+
+    $this->translator->setGroup(Group::FORUM);
+
+    $e = new Phalcon\Escaper();
+
+?>
+
+            <div class="col-md-12 col-sm-12 col-xs-12 form" id="addForumTopicBlock">
+                <h1><?php echo $this->translator->trans('edit_forum_topic_title', 'Rediģēt tēmu'); ?></h1>
+                
+<?php if (!$this->auth->isAuthorised()) : ?>
+                <div class="sign-up-message">
+                    <?php echo $this->translator->trans('unauthorised_info_message_in_add_forum_topic_form', '<i class="fa fa-male"></i>Lūdzu, <a href="javascript:;" data-toggle="modal" data-target="#Login" title="Autorizēties">autorizējies</a> vai <a href="javascript:;" data-toggle="modal" data-target="#Register" title="Reģistrēties">reģistrējies</a>, lai varētu pievienot foruma tēmu'); ?>
+                </div>
+<?php
+    else : 
+        $member = $this->auth->getAuthorisedUser();
+        if ($member->isBannedForumTopics()) :
+?>
+                <div class="sign-up-message">
+                    <?php echo $this->translator->trans('banned_info_message_in_add_forum_topic_form', '<i class="fa fa-male"></i>Jums ir liegta pieeja pievienot foruma tēmu! Neskaidrību gadījumā, lūdzam, sazināties ar administrāciju.'); ?>
+                </div>
+<?php   endif; ?>
+<?php endif; ?>
+
+                <?php
+                    echo $form->openTag($action, [
+                        'method'  => 'post',
+                        'name'    => 'frmAddForumTopic',
+                        'id'      => 'frmAddForumTopic'
+                    ]);
+                ?>
+                    <?php echo $form->render("id"); ?>
+
+                    <div class="form-group">
+                        <label><?php echo $this->translator->trans('lbl_forum_category', 'Kategorija<span class="req">*</span>'); ?></label>
+                        <div class="container-fluid upload-photo">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12 col">
+                                    <span class="dd"><?php echo $this->translator->trans('lbl_forum_category1', 'Sadaļa 1'); ?></span>
+                                    <div class="input">
+                                        <?php echo $form->render('categoryLvl1'); ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 col">
+                                    <span class="dd"><?php echo $this->translator->trans('lbl_forum_category2', 'Sadaļa 2'); ?></span>
+                                    <div class="input">
+                                        <?php echo $form->render('categoryLvl2'); ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-xs-12 col" id="categoryLvl3Block">
+                                    <span class="dd"><?php echo $this->translator->trans('lbl_forum_category3', 'Sadaļa 3'); ?></span>
+                                    <div class="input">
+                                        <?php echo $form->render('categoryLvl3'); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="alert-message hide">Error message</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label><?php echo $this->translator->trans('lbl_forum_title', 'Virsraksts<span class="req">*</span>'); ?></label>
+                        <span class="dd"><?php echo $this->translator->trans('lbl_forum_title_info_text', 'Jāsatur no 20 līdz 140 simboliem'); ?></span>
+                        <div class="input">
+                            <span class="symbol-left" id="title_elem_count">140</span>
+                            <?php echo $form->render('title'); ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><?php echo $this->translator->trans('lbl_forum_content', 'Pilns tēmas teksts<span class="req">*</span>'); ?></label>
+                        <span class="dd"><?php echo $this->translator->trans('lbl_forum_title_info_content', 'Jāsatur no 200 līdz 5000 simboliem'); ?></span>
+                        <div class="input">
+                            <span class="symbol-left" id="content_elem_count">5000</span>
+                            <?php echo $form->render('content'); ?>
+                        </div>
+                    </div>
+
+                <?php echo $form->closeTag(); ?>
+
+<?php if ($this->auth->isAuthorised()) : ?>
+    <?php if (is_object($member) && !$member->isBannedForumTopics()) : ?>
+                <div class="container-fluid form-sub-nav">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-6 preview">
+                            <a href="javascript:;" tabindex="15" id="btnPreviewTopic" title="<?php echo $this->translator->trans('btn_preview_topic', 'Priekšskatījums'); ?>"><i class="fa fa-eye"></i><?php echo $this->translator->trans('btn_preview_topic', 'Priekšskatījums'); ?></a>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-6 publish">
+                            <a href="javascript:;" tabindex="16" id="btnUpdateTopic" title="<?php echo $this->translator->trans('btn_save_topic', 'Pievienot'); ?>" class="publish"><?php echo $this->translator->trans('btn_update_topic', 'Saglabāt'); ?></a>
+                        </div>
+                    </div>
+                </div>
+    <?php endif; ?>
+<?php endif; ?>
+
+            </div>
+
+<?php $this->translator->unsetGroup(); ?>

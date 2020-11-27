@@ -1,0 +1,161 @@
+<?php
+
+    use Articles\Entity\Article;
+    use Articles\Entity\Comment;
+    use Members\Entity\Member;
+    use Polls\Entity\Poll;
+
+    /* @var $comment Comment */
+
+    $article = $comment->getArticle();
+    /* @var $parent Article */
+
+    $poll = $comment->getPoll();
+    /* @var $poll Poll */
+
+    $member = $comment->getMember();
+    /* @var $member Member */
+
+    $createdAt = $comment->getCreatedAt();
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="javascript:;" class="btn btn-primary w-100" id="btnSave" tabindex="100">Save</a>
+            <a href="<?php echo $this->url->get(['for' => 'all_comments_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>Edit Comment</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method' => 'post',
+            'name'   => 'frmCommentEdit',
+            'id'     => 'frmCommentEdit'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="sp27"></div>
+                <h2>General</h2>
+                <div class="sp21"></div>
+                <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                    <tr>
+                        <td>ID</td>
+                        <td><b><?php echo $comment->getId(); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Created at</td>
+                        <td><b><?php echo $createdAt->format('d/m/y H:i:s'); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Rate</td>
+                        <td><b><?php echo $comment->getRateAvg(); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Is reply</td>
+                        <td><b><?php echo is_object($comment->getReplyOnComment()) ? 'Yes, answer on ' . $this->tag->linkTo([['for' => 'comment_edit', 'id' => $comment->getReplyOnComment()->getId()], (string)$comment]) : 'No'; ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Has replies</td>
+                        <td><b><?php echo count($comment->getReplyComments()) ? 'Yes, has ' . count($comment->getReplyComments()) . ' replies' : 'No'; ?></b></td>
+                    </tr>
+<?php if (is_object($article)) : ?>
+                    <tr>
+                        <td>Article</td>
+                        <td><b><?php echo $this->tag->linkTo([['for' => 'articles_edit', 'id' => $article->getId()], (string)$article]); ?></b></td>
+                    </tr>
+<?php endif; ?>
+<?php if (is_object($poll)) : ?>
+                    <tr>
+                        <td>Poll</td>
+                        <td><b><?php echo $this->tag->linkTo([['for' => 'polls_edit', 'id' => $poll->getId()], (string)$poll]); ?></b></td>
+                    </tr>
+<?php endif; ?>
+                    <tr>
+                        <td>Member</td>
+                        <td><b><?php echo is_object($member) ? 
+                        $this->tag->linkTo([['for' => 'members_view', 'id' => $member->getId()], (string)$member]) 
+                        : '-'; ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>IP Address</td>
+                        <td><b><?php echo $comment->getIpAddress(); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Session ID</td>
+                        <td><b><?php echo $comment->getSessionId(); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Browser User Agent</td>
+                        <td><b><?php echo $comment->getUserAgent(); ?></b></td>
+                    </tr>
+                </tbody></table>
+                <div class="sp24"></div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="sp27"></div>
+                        <h2>Info</h2>
+                        <div class="sp21"></div>
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <?php echo $form->renderWithLabel('blocked'); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <?php echo $form->renderWithLabel('content'); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <?php echo $form->closeTag(); ?>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $("#frmCommentEdit").submit();
+        });
+
+    });
+</script>

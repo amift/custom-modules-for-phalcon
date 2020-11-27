@@ -1,0 +1,17 @@
+<?php
+
+use Translations\Tool\Group;
+
+$this->translator->setGroup(Group::MEMBERS);
+
+?>
+        <div class="col-md-12 col-sm-12 col-xs-12 congratulations">
+            <i class="fa fa-smile-o"></i>
+            <h1><?php echo $this->translator->trans('account_activation_heading', 'Apsveicam!'); ?></h1>
+            <span class="dd">
+                <?php echo $this->translator->trans('account_activation_info_text', 'Tavs lietotāja konts ir veiksmīgi aktivizēts un autorizēts.'); ?>
+            </span>
+            <a href="<?php echo $this->url->get(['for' => '/']); ?>" class="back" title="<?php echo $this->translator->trans('link_text_startpage', 'Sākumlapa'); ?>"><?php echo $this->translator->trans('link_text_go_to_homepage', 'Iet uz galveno sadaļu'); ?></a>
+            <a href="<?php echo $this->url->get(['for' => 'member_profile']); ?>" class="back" title="<?php echo $this->translator->trans('link_text_profile', 'Profils'); ?>"><?php echo $this->translator->trans('link_text_go_to_profile', 'Iet uz profilu'); ?></a>
+        </div>
+<?php $this->translator->unsetGroup(); ?>

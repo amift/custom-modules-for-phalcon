@@ -1,0 +1,90 @@
+<?php
+
+    use Communication\Entity\Template;
+
+    /* @var $template Template */
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="javascript:;" class="btn btn-primary w-100" id="btnSave" tabindex="100">Save</a>
+            <a href="<?php echo $this->url->get(['for' => 'notification_templates_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>Add notification template</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method' => 'post',
+            'name'   => 'frmTemplateAdd',
+            'id'     => 'frmTemplateAdd'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+        <div class="row">
+            <div class="col-xs-4">
+                <?php echo $form->renderWithLabel('enabled'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('title'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('description'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('fromName'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('fromEmail'); ?>
+            </div>
+            <div class="col-lg-8">
+                <?php echo $form->renderWithLabel('subject'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('body'); ?>
+                
+                <p style="font-weight: bold;">Available placeholders</p>
+                <div class="sp7"></div>
+                <ul>
+                    <?php foreach ($template->getPlaceholders() as $placeholder) { ?>
+                    <li style="margin-bottom: 3px;"><?php echo sprintf('{{ %s }}', $placeholder) ?></li>
+                    <?php } ?>
+                </ul>
+            </div>
+        </div>
+
+    <?php echo $form->closeTag(); ?>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $("#frmTemplateAdd").submit();
+        });
+
+    });
+</script>

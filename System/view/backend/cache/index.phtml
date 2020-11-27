@@ -1,0 +1,58 @@
+
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <h1>Cached Data</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:185px;">Key</th>
+                <th>Data</th>
+                <th style="width:65px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php foreach ($rows as $row) { ?>
+            <tr>
+                <td><?php echo $row['key']; ?></td>
+                <td><?php var_dump($row['data']); ?></td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'cache_delete', 'key' => $row['key']], 'Delete', 'class' => 'delete']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Trigger DELETE click
+        $('.table').on('click', 'a.delete', function(e) {
+            e.preventDefault();
+            var href = $(this).attr('href');
+            bootbox.confirm('Are you sure?', function(result) {
+                if (result === true) {
+                    document.location.href = href;
+                }
+            });
+        });
+    });
+</script>

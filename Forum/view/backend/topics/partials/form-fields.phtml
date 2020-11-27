@@ -1,0 +1,169 @@
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method'  => 'post',
+            'name'    => 'frmForumTopic',
+            'id'      => 'frmForumTopic'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Main info</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <?php echo $form->renderWithLabel('title'); ?>
+                    </div>
+                    <div class="col-lg-6">
+                        <?php echo $form->renderWithLabel('slug'); ?>
+                    </div>
+                </div>
+                <div class="sp7"></div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <?php echo $form->renderWithLabel('content'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Statuses</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <?php echo $form->renderWithLabel('state'); ?>
+                    </div>
+                    <div class="col-xs-3">
+                        <?php echo $form->renderWithLabel('pinned'); ?>
+                    </div>
+                    <div class="col-xs-3">
+                        <?php echo $form->renderWithLabel('hot'); ?>
+                    </div>
+                    <div class="col-xs-3">
+                        <?php echo $form->renderWithLabel('locked'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Category</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <?php echo $form->renderWithLabel('categoryLvl1'); ?>
+                    </div>
+                    <div class="col-xs-4">
+                        <?php echo $form->renderWithLabel('categoryLvl2'); ?>
+                    </div>
+                    <div class="col-xs-4">
+                        <?php echo $form->renderWithLabel('categoryLvl3'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <?php echo $form->closeTag(); ?>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $('#frmForumTopic input').each(function() {
+                $(this).removeAttr('disabled');
+            });
+            $('#frmForumTopic select').each(function() {
+                $(this).removeAttr('disabled').selectpicker('refresh');
+            });
+            urlSegment.generate('slug_elem');
+            $("#frmForumTopic").submit();
+        });
+
+        // On title change create url if it is empty
+        $('#title_elem').bind('blur', function(){
+            urlSegment.generateWhenEmtpy('slug_elem', 'title_elem');
+        });
+
+        // Disable cat2, cat3 fields when type empty
+        if ($("#categoryLvl1_elem").find(":selected").val() === '0') {
+            disableSelectField('#categoryLvl2_elem');
+        }
+
+        // Disable model fields when mark empty
+        if ($("#categoryLvl2_elem").find(":selected").val() === '0') {
+            disableSelectField('#categoryLvl3_elem');
+        }
+
+        // Reload cat2 on cat1 change
+        $("#categoryLvl1_elem").change(function() {
+            var cat1_id = $(this).find(":selected").val();
+            if (parseInt(cat1_id) > 0) {
+                var request = $.ajax({
+                    type: 'GET',
+                    url: '<?php echo $this->url->get(['for' => 'forum_categories_ajax_load']); ?>' + cat1_id
+                });
+                request.done(function(data){
+                    var data = $.parseJSON(data);
+                    refillSelectFieldOptions('#categoryLvl2_elem', data.data);
+                    clearSelectFieldOptions('#categoryLvl3_elem');
+                });
+            } else {
+                clearSelectFieldOptions('#categoryLvl2_elem');
+                clearSelectFieldOptions('#categoryLvl3_elem');
+            }
+        });
+
+        // Reload cat3 on cat2 change
+        $("#categoryLvl2_elem").change(function() {
+            var cat2_id = $(this).find(":selected").val();
+            if (parseInt(cat2_id) > 0) {
+                var request = $.ajax({
+                    type: 'GET',
+                    url: '<?php echo $this->url->get(['for' => 'forum_categories_ajax_load']); ?>' + cat2_id
+                });
+                request.done(function(data){
+                    var data = $.parseJSON(data);
+                    refillSelectFieldOptions('#categoryLvl3_elem', data.data);
+                });
+            } else {
+                clearSelectFieldOptions('#categoryLvl3_elem');
+            }
+        });
+
+    });
+
+</script>

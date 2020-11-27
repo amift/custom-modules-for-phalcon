@@ -1,0 +1,109 @@
+<?php
+
+    use Statistics\Entity\SportSeason;
+
+    /* @var $season SportSeason */
+
+?>
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method'  => 'post',
+            'name'    => 'frmSportSeason',
+            'id'      => 'frmSportSeason'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Main info</div>
+            </div>
+            <div class="col-lg-9">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('sportType'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('sportLeague'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('title'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('key'); ?>
+                    </div>
+                    <div class="col-lg-2">
+                        <?php echo $form->renderWithLabel('actual'); ?>
+                    </div>
+                    <div class="col-lg-2">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-10">
+                        <?php echo $form->renderWithLabel('importApiUrl'); ?>
+                    </div>
+                    <div class="col-lg-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <?php echo $form->closeTag(); ?>
+
+<script type="text/javascript">
+
+    $(function() {
+        "use strict";
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $('#frmSportSeason input').each(function() {
+                $(this).removeAttr('disabled');
+            });
+            $('#frmSportSeason select').each(function() {
+                $(this).removeAttr('disabled').selectpicker('refresh');
+            });
+            $('#frmSportSeason').submit();
+        });
+
+        // Reload leagues on type change
+        $("#sportType_elem").change(function() {
+            var type_id = $(this).find(":selected").val();
+            if (parseInt(type_id) > 0) {
+                var request = $.ajax({
+                    type : 'GET',
+                    url : '<?php echo $this->url->get(['for' => 'sport_leagues_ajax_load']); ?>' + type_id
+                });
+                request.done(function(data){
+                    var data = $.parseJSON(data);
+                    refillSelectFieldOptions('#sportLeague_elem', data.data);
+                });
+            } else {
+                clearSelectFieldOptions('#sportLeague_elem');
+            }
+        });
+
+    });
+
+</script>

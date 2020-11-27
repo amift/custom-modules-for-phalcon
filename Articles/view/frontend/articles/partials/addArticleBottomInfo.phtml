@@ -1,0 +1,27 @@
+<?php $this->translator->setGroup(\Translations\Tool\Group::ARTICLES); ?>
+
+            <div class="container-fluid easy-steps">
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 col-xs-6 step">
+                        <span class="circle"><span class="pts"><?php echo $this->translator->trans('add_article_bottom_info_published_pts_text', '+5'); ?></span></span>
+                        <span class="dd"><?php echo $this->translator->trans('add_article_bottom_info_published_text', 'Par ziņu, kas tiek publicēta, saņemsi +5 reitinga punktus.'); ?></span>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-6 step">
+                        <span class="circle"><span class="pts"><?php echo $this->translator->trans('add_article_bottom_info_startpage_pts_text_v2', '+7'); ?></span></span>
+                        <span class="dd"><?php echo $this->translator->trans('add_article_bottom_info_startpage_text_v2', 'Par ziņu, ko ievietosim sākumlapā, saņemsi +7 reitinga punktus.'); ?></span>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-6 step">
+                        <span class="circle"><span class="pts"><?php echo $this->translator->trans('add_article_bottom_info_rate_pts_text', '+10'); ?></span></span>
+                        <span class="dd"><?php echo $this->translator->trans('add_article_bottom_info_rate_text', 'Par ziņu, kuru pozitīvi novērtēja visamz 15 lietotāji, saņemsi +10 reitinga punktus.'); ?></span>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-6 step"><?php /* ?>
+                        <span class="circle"><span class="pts"><?php echo $this->translator->trans('add_article_bottom_info_startpage_promo_pts_text', '+15'); ?></span></span>
+                        <span class="dd"><?php echo $this->translator->trans('add_article_bottom_info_startpage_promo_text', 'Par ziņu, ko ievietosim sākumlapā TOPĀ, saņemsi +5 reitinga punktus.'); ?></span>
+                    </div>
+                    <div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12 step"><?php */ ?>
+                        <span class="circle ban"><i class="fa fa-ban"></i></span>
+                        <span class="dd"><?php echo $this->translator->trans('add_article_bottom_info_ban_text', 'Publikācijas noteikumu pārkāpumu gadījumā, ziņa var tikt dzēsta, kā arī novest līdz lietotāja konta bloķēšanai.'); ?></span>
+                    </div>
+                </div>
+            </div>
+<?php $this->translator->unsetGroup(); ?>

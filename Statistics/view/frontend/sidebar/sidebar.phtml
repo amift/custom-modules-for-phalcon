@@ -1,0 +1,65 @@
+<?php
+
+    use Translations\Tool\Group;
+
+    $this->translator->setGroup(Group::STATISTICS);
+
+    $htmlTypes = $htmlLeagues = '';
+    
+    if ($hideFilters) {
+        foreach ($data['filters'] as $sportTypeId => $sportType) {
+            if (count($sportType['leagues']) > 1) {
+                $hideFilters = false;
+            }
+            break;
+        }
+    }
+    
+    if (!$hideFilters) {
+        foreach ($data['filters'] as $sportTypeId => $sportType) {
+
+            // Sport types
+            $htmlType = sprintf(
+                '<a rel="nofollow" id="stats_sport_type_%s" href="javascript:;" class="siderbarStatsTypeSelect %s" title="%s" onclick="stats.sidebarChangeType(\'%s\', \'%s\');"><i class="icon-%s"></i></a>',
+                $sportType['id'],
+                $sportType['selected'] ? 'active' : '',
+                $sportType['title'],
+                $sportType['id'],
+                $sportType['default_stats'],
+                $sportType['key']
+            );
+            $htmlTypes.= $htmlType;
+
+            // Sport leagues
+            $htmlSportType = '<div id="stats_leagues_by_sport_type_'.$sportType['id'].'"' . ($sportType['selected'] ? '' : ' style="display:none;"') . '><select class="siderbarStatsLeagueSelect">';
+            foreach ($sportType['leagues'] as $sportLeagueId => $sportLeague) {
+                $htmlSportType.= '<option value="'.$sportLeague['default_stats'].'">'.$sportLeague['leagueTitle'].'</option>';
+            }
+            $htmlSportType.= '</select></div>';
+            $htmlLeagues.= $htmlSportType;
+
+        }
+    }
+
+?>
+
+            <div class="stats" id="sidebarStats" data-sidebartableurl="<?php echo $this->url->get(['for' => 'stats_get_siderbar_table']); ?>">
+                <h4>
+                    <i class="fa fa-table"></i><?php echo $this->translator->trans('stats_sidebar_title', 'Statistika'); ?>
+                </h4>
+<?php if (!$hideFilters) { ?>
+                <div class="league-tab" id="siderbarStatsTypes">
+                    <?php echo $htmlTypes; ?>
+                </div>
+                <div class="league-type" id="siderbarStatsLeagues">
+                    <?php echo $htmlLeagues; ?>
+                </div>
+                <div class="table-responsive" id="siderbarStatsTable">
+<?php } else { ?>
+                <div class="table-responsive" id="siderbarStatsTable" style="padding-top:15px;">
+<?php } ?>
+                    <?php echo $this->statisticsService->checkStatsMainParamsAndSidebarTableHtml($data['selected_stats_ids'], false); ?>
+                </div>
+            </div>
+
+<?php $this->translator->unsetGroup(); ?>

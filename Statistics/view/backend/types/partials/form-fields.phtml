@@ -1,0 +1,89 @@
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method'  => 'post',
+            'name'    => 'frmSportType',
+            'id'      => 'frmSportType'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Main info</div>
+            </div>
+            <div class="col-lg-9">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('title'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('key'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('scoreField'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Mapped Category</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <?php echo $form->renderWithLabel('articleCategoryLvl1'); ?>
+                    </div>
+                    <div class="col-xs-4"></div>
+                    <div class="col-xs-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Statistics all fields</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <?php echo $form->renderWithLabel('tableFields'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php echo $form->closeTag(); ?>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $("#frmSportType").submit();
+        });
+    });
+</script>

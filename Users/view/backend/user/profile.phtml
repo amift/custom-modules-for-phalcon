@@ -1,0 +1,79 @@
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <h1>User profile</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp21"></div>
+
+    <div class="row profile_cols">
+        <div class="col-lg-4">
+            <div class="info" style="clear:both;">
+                <h2>General info</h2>
+                <div class="sp18"></div>
+                <div class="line">
+                    <div class="left">Name</div>
+                    <div class="right"><?php echo $user->getFirstName(); ?></div>
+                </div>
+                <div class="line">
+                    <div class="left">Surname</div>
+                    <div class="right"><?php echo $user->getLastName(); ?></div>
+                </div>
+                <div class="line">
+                    <div class="left">Email</div>
+                    <div class="right"><?php echo $user->getEmail(); ?></div>
+                </div>
+                <div class="line">
+                    <div class="left">Phone</div>
+                    <div class="right"><?php echo $user->getPhone(); ?></div>
+                </div>
+                <div class="line">
+                    <div class="left">Group</div>
+                    <div class="right">Administrator</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            
+            <?php
+                echo $form->openTag($action, [
+                    'class'  => 'right_col',
+                    'method' => 'post',
+                    'name'   => 'frmProfile',
+                    'id'     => 'frmProfile'
+                ]);
+            ?>
+                <h2>Change password</h2>
+                <div class="sp30"></div>
+                <?php /*echo $form->renderWithLabel('oldPassword'); ?>
+                <div class="sp7"></div><?php */ ?>
+                <?php echo $form->renderWithLabel('newPassword'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('passwordConfirm'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->render("go"); ?>
+                <?php echo $form->render("id"); ?>
+                <?php echo $form->render("csrf"); ?>
+            <?php echo $form->closeTag(); ?>
+        </div>
+    </div>
+    <div class="c sp20"></div>
+</div>

@@ -1,0 +1,124 @@
+<?php
+
+    use Forum\Entity\ForumTopic;
+    use Translations\Tool\Group;
+
+    $this->translator->setGroup(Group::FORUM);
+
+    $e = new Phalcon\Escaper();
+
+    $breadcrumbCounts = count($breadcrumbUrls);
+
+?>
+
+            <div class="col-md-12 col-sm-12 col-xs-12 content">
+                <div class="container-fluid">
+
+<?php if ($breadcrumbCounts > 1) : ?>
+                    <div class="row reset-border">
+                        <div class="col-md-12 col-sm-12 col-xs-12 path">
+<?php
+    $counter = 0;
+    foreach ($breadcrumbUrls as $breadcrumbUrl) {
+        $counter++;
+        if ($counter < $breadcrumbCounts) {
+            ?><a href="<?php echo $breadcrumbUrl['url']; ?>"><?php echo $breadcrumbUrl['title']; ?></a> / <?php
+        } else {
+            echo $breadcrumbUrl['title'];
+        }
+    }
+?>
+                        </div>
+                    </div>
+<?php endif; ?>
+
+                    <div class="row even">
+                        <div class="col-md-6 col-sm-6 col-xs-6 th th-left">
+                            <i class="fa fa-shield"></i><?php echo $this->translator->trans('forum_topic', 'Tēma'); ?>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2 th">
+                            <i class="fa fa-comment"></i><?php echo $this->translator->trans('forum_latest_comment', 'Jaunākā atbilde'); ?>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2 th">
+                            <i class="fa fa-comments"></i><?php echo $this->translator->trans('forum_comments_count', 'Atbildes'); ?>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2 th">
+                            <i class="fa fa-eye"></i><?php echo $this->translator->trans('forum_views_count', 'Skatījumi'); ?>
+                        </div>
+                    </div>
+
+<?php if (is_object($finalCategory)) : ?>
+                    <div class="row odd">
+                        <div class="col-md-10 col-sm-10 col-xs-10 category">
+                            <?php echo $finalCategory->getTitle(); ?>
+                            <span class="dd"><?php echo $finalCategory->getContent(); ?></span>
+                        </div><div class="col-md-2 col-sm-2 col-xs-2 add-topic">
+                            <a href="<?php echo rtrim($this->url->get(['for' => 'forum_add_topic']), '/'); ?>" title="<?php echo $e->escapeHtmlAttr($this->translator->trans('link_text_add_topic', 'Pievienot tēmu')); ?>"><?php echo $this->translator->trans('link_text_add_topic', 'Pievienot tēmu'); ?></a>
+                        </div>
+                    </div>
+<?php endif; ?>
+
+<?php
+if ($topics['paginator'] !== null && count($topics['paginator']) > 0) :
+    foreach ($topics['paginator'] as $topic) :
+        /* @var $topic ForumTopic */
+    
+        $member = $topic->getMember();
+
+        $topicStyle = '';
+        $topicIcon = 'fa fa-file-o';
+        if ($topic->isPinned()) {
+            $topicStyle = ' pinned';
+            $topicIcon = 'fa fa-bookmark';
+        }
+        if ($topic->isHot()) {
+            $topicStyle = ' hot';
+            $topicIcon = 'fa fa-bomb';
+        }
+        if ($topic->isLocked()) {
+            $topicStyle = ' locked';
+            $topicIcon = 'fa fa-lock';
+        }
+        
+        $lastReplyAt = $topic->getLastReplyListViewDate();
+
+?>
+                    <div class="row td-theme-row<?php echo $topicStyle; ?>">
+                        <div class="col-md-6 col-sm-6 col-xs-6 td category-dd theme-status">
+                            <i class="<?php echo $topicIcon; ?>"></i>
+                            <span class="title">
+                                <a href="<?php echo $topic->getTopicUrl($fullUrl); ?>" title="<?php echo $e->escapeHtmlAttr($topic->getTitle()); ?>"><?php echo $topic->getTitle(); ?></a>
+                                <?php /* ?><span class="pages">(<a href="/">1</a><a href="/">2</a><a href="/">Last page</a>)</span><?php */ ?>
+                            </span>
+                        <?php if (is_object($member)) : ?>
+                            <span class="dd"><?php echo $this->translator->trans('forum_topic_added_by', 'Pievienoja:'); ?> <b><?php echo (string)$member; ?></b></span>
+                        <?php endif; ?>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2 td themes">
+                            <?php echo $lastReplyAt === null ? '-' : $lastReplyAt; ?>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2 td themes">
+                            <?php echo $topic->getCommentsCount(); ?>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2 td total-comments">
+                            <?php echo $topic->getViewsCount(); ?>
+                        </div>
+                    </div>
+<?php endforeach; ?>
+<?php 
+    if ($fullUrl !== '') : 
+        echo $this->gridPager->links($fullUrl, $topics['paginator'], $topics['currentPage'], $topics['perPage'], 7, 'partials/paginationForum');
+    endif;
+?>
+<?php else : ?>
+                    <div class="row td-theme-row">
+                        <div class="col-md-12 col-sm-12 col-xs-12 td themes">
+                            <?php echo $this->translator->trans('forum_currently_no_topics', 'Pašlaik vēl neviena tēma nav pievienota.'); ?>
+                        </div>
+                    </div>
+<?php endif; ?>
+
+                </div>
+            </div>
+
+<?php $this->translator->unsetGroup(); ?>

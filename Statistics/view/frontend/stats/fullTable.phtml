@@ -1,0 +1,178 @@
+<?php
+
+    use Statistics\Entity\SportLeague;
+    use Statistics\Entity\SportLeagueGroup;
+    use Statistics\Entity\SportSeason;
+    use Statistics\Entity\SportStatsOverall;
+    use Statistics\Entity\SportTeam;
+    use Statistics\Entity\SportType;
+    use Statistics\Tool\StatsField;
+    use Translations\Tool\Group;
+
+    /* @var $sportType SportType */
+
+    /* @var $sportLeague SportLeague */
+
+    /* @var $season SportSeason */
+
+    $this->translator->setGroup(Group::STATISTICS);
+    
+    $sportTypeKey = $sportType->getKey();
+
+    $breadcrumbCounts = count($breadcrumbUrls);
+
+?>
+
+        <div class="col-md-9 col-sm-9 col-xs-12 full-article">
+            <div class="container-fluid">
+
+                <div class="row heading">
+                    <div class="col-md-7 col-sm-7 col-xs-7 dd">
+<?php if ($breadcrumbCounts > 0) : ?>
+                            <span class="paths">
+<?php
+    $counter = 0;
+    foreach ($breadcrumbUrls as $breadcrumbUrl) {
+        $counter++;
+        ?><a href="<?php echo $breadcrumbUrl['url']; ?>"><?php echo $breadcrumbUrl['title']; ?></a><?php
+        if ($counter <= $breadcrumbCounts) {
+            ?> / <?php
+        }
+    }
+?> <?php echo $this->translator->trans('stats_breadcrumb_stats_title', 'Statistika'); ?>
+                            </span>
+<?php else : ?>
+                        <?php echo $sportType->getTitle() . ' / ' . $sportLeague->getTitle(); ?>
+<?php endif; ?>
+                    </div>
+                    <div class="col-md-5 col-sm-5 col-xs-5 social">
+                        <a href="javascript:;" onclick="sharer.fb('<?php echo $urlReal; ?>', '<?php echo $this->metaData->getTitle(); ?>', '', '<?php echo $this->metaData->getDescription(); ?>');" title="Facebook" class="fb"><i class="fa fa-facebook"></i></a>
+                        <a href="javascript:;" onclick="sharer.tw('<?php echo $urlReal; ?>', '<?php echo $this->metaData->getTitle(); ?>', '', '<?php echo $this->metaData->getDescription(); ?>');" title="Twitter" class="tw"><i class="fa fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <div class="row overall">
+                    <div class="col-md-12 title">
+                        <h1><?php echo $season->getTitle(); ?></h1>
+<?php if (is_object($season->getImportApiActualDate())) : ?>
+                        <h5><?php echo $this->translator->trans('stats_last_update_at', 'Pēdējās izmaiņas ') . $season->getImportApiActualDate()->format('d.m.Y'); ?></h5>
+<?php endif; ?>
+                    </div>
+                </div>
+
+                <div class="row news-body recent-news">
+                    <div class="col-md-12">
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="position"></th>
+                                        <th><?php echo $this->translator->trans('stats_'.$sportTypeKey.'_field_team', 'Komanda'); ?></th>
+<?php
+    $scoreField = $sportType->getSoreField();
+    $tableFields = $sportType->getTableFields();
+    $columnsCount = 2;
+    foreach ($tableFields as $fieldKey) {
+        if ($fieldKey === StatsField::FIELD_PLACE) {
+            continue;
+        }
+        $class = $fieldKey === $scoreField ? ' class="gray-bg"' : '';
+        $columnsCount++;
+?>
+                                        <th<?php echo $class; ?>><?php echo $this->translator->trans('stats_'.$sportTypeKey.'_field_' . $fieldKey, StatsField::getLabel($fieldKey)); ?></th>
+<?php
+    }
+?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+<?php
+    foreach ($stats as $group) {
+        $sportLeagueGroup = $group['sportLeagueGroup'];
+        /* @var $sportLeagueGroup SportLeagueGroup */
+
+        $table = $group['table'];
+?>
+                                    <tr class="conference">
+                                        <td colspan="<?php echo $columnsCount; ?>"><?php echo $sportLeagueGroup->getTitle(); ?></td>
+                                    </tr>
+<?php
+        $totalRows = count($table);
+        $counter = 1;
+        foreach ($table as $row) {
+            /* @var $row SportStatsOverall */
+
+            $team = $row->getSportTeam();
+            /* @var $team SportTeam */
+
+            $isFirstRow = false;
+            $rowClass = [];
+            if ($counter === 1) {
+                $rowClass[] = 'first';
+                $isFirstRow = true;
+            } elseif ($counter === $totalRows) {
+                $rowClass[] = 'last';
+            }
+
+            $title = $team->getTitle();
+            if ((string)$team->getCountry() !== '') {
+                if (strlen((string)$team->getCountry()) === 2) {
+                    $title .= ' (' . strtoupper($team->getCountry()) . ')';
+                } else {
+                    $title .= ', ' . $team->getCountry();
+                }
+            }
+            if ((string)$team->getAdditionalInfo() !== '') {
+                $title .= ' | ' . $team->getAdditionalInfo();
+            }
+
+            $scoreClass = (int)$row->getDifferent() < 0 ? 'red-text' : 'green-text';
+?>
+                                    <tr<?php echo count($rowClass) > 0 ? ' class="' . implode(' ', $rowClass) . '"' : ''; ?>>
+                                        <td class="position"><?php echo $row->getPlace(); ?></td>
+                                        <td><?php echo $title; ?></td>
+<?php
+            foreach ($tableFields as $fieldKey) {
+                if ($fieldKey === StatsField::FIELD_PLACE) {
+                    continue;
+                }
+                $class = $fieldKey === $scoreField ? ' class="gray-bg"' : '';
+                $method = 'get' . ucfirst($fieldKey);
+                if ($fieldKey === StatsField::FIELD_DIFFERENT) {
+?>
+                                        <td<?php echo $class; ?>><span class="<?php echo !$isFirstRow ? $scoreClass : ''; ?>"><?php echo $row->{$method}(); ?></span></td>
+<?php
+                } else {
+?>
+                                        <td<?php echo $class; ?>><?php echo $row->{$method}(); ?></td>
+<?php
+                }
+            }
+?>
+                                    </tr>
+<?php
+            $counter++;
+        }
+    }
+?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-3 col-xs-12 recent-news right-side">
+            <div class="banners">
+                <div class="single-banner banner160x600px">
+                    <a href="<?php echo $this->url->get(['for' => 'document_advertising_opportunities']); ?>" title="<?php echo $this->translator->trans('link_text_learn_more', 'Uzzini vairāk', Group::NOT_SET); ?>">
+                        <img src="/assets/img/160x0600px-blank.jpg" border="0" />
+                    </a>
+                </div>
+            </div>
+        </div>
+
+<?php $this->translator->unsetGroup(); ?>

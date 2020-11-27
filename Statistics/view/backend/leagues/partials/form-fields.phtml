@@ -1,0 +1,223 @@
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method'  => 'post',
+            'name'    => 'frmSportLeague',
+            'id'      => 'frmSportLeague'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Main info</div>
+            </div>
+            <div class="col-lg-9">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('sportType'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('title'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('key'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Mapped Category</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <?php echo $form->renderWithLabel('articleCategoryLvl2'); ?>
+                    </div>
+                    <div class="col-xs-4"></div>
+                    <div class="col-xs-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Groups</div>
+                <div style="padding-top:5px;">
+                    <a href="#" id="btnAddOption"> + Add group</a>
+                </div>
+            </div>
+            <div class="col-xs-9" id="options_holder">
+            </div>
+        </div>
+
+    <?php echo $form->closeTag(); ?>
+
+<script type="text/javascript">
+
+    var OPTIONS_SAVED = <?php echo json_encode($league->getFormattedOptionsForForm()) ?>;
+
+    $(function() {
+        "use strict";
+
+        var $holder = $('#options_holder');
+        var num = 1;
+
+        $('#btnAddOption').click(function(e){
+            e.preventDefault();
+            createRow('', '', '');
+            $('html, body').animate({scrollTop: $(document).height()}, 'slow');
+        });
+
+        var createRow = function(id, title, key) {
+
+            var template = $('#rowTemplate').html();
+
+            var $row = $(template.split('__num__').join(num.toString()));
+
+            $('.id_inp', $row).val(id);
+            $('.title_inp', $row).val(title);
+            $('.key_inp', $row).val(key);
+
+            if (parseInt(id) > 0) {
+                $('.key_inp', $row).prop('readonly', true);
+            }
+
+            $('.btnDeleteOption', $row).click(function(e) {
+                e.preventDefault();
+                var $block = $(this);
+                bootbox.confirm('Are You sure to delete group?!', function(result) {
+                    if (true === result) {
+                        $block.parents('.rowValue:first').remove();
+                    }
+                });
+            });
+
+            $holder.append($row);
+
+            num++;
+        };
+
+        for (var i = 0; i < OPTIONS_SAVED.length; i++) {
+            var val = OPTIONS_SAVED[i];
+            createRow(val.id, val.title, val.key);
+        }
+
+        // Reload Article category LVL 2 on Type change
+        $("#sportType_elem").change(function() {
+            var type_id = $(this).find(":selected").val();
+            if (parseInt(type_id) > 0) {
+                var request = $.ajax({
+                    type: 'GET',
+                    url: '<?php echo $this->url->get(['for' => 'sport_types_articles_categories_ajax_load']); ?>' + type_id
+                });
+                request.done(function(data){
+                    var data = $.parseJSON(data);
+                    refillSelectFieldOptions('#articleCategoryLvl2_elem', data.data);
+                });
+            } else {
+                clearSelectFieldOptions('#articleCategoryLvl2_elem');
+            }
+        });
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $('#frmSportLeague input').each(function() {
+                $(this).removeAttr('disabled');
+            });
+            $('#frmSportLeague select').each(function() {
+                $(this).removeAttr('disabled').selectpicker('refresh');
+            });
+
+            // options part
+            var addError = function($inp) {
+                $inp.parents('.form-group:first').addClass('has-error');
+            };
+            var removeError = function($inp) {
+                $inp.parents('.form-group:first').removeClass('has-error');
+            };
+
+            var hasError = false;
+            var i = 0;
+
+            $holder.find('.rowValue').each(function() {
+                var $row = $(this);
+                var $idInp = $row.find('.id_inp');
+                var $titleInp = $row.find('.title_inp');
+                var $keyInp = $row.find('.key_inp');
+
+                if ($titleInp.val().length === 0) {
+                    addError($titleInp);
+                    hasError = true;
+                } else {
+                    removeError($titleInp);
+                }
+
+                if ($keyInp.val().length === 0) {
+                    addError($keyInp);
+                    hasError = true;
+                } else {
+                    removeError($keyInp);
+                }
+
+                i++;
+            });   
+
+            console.log(hasError);
+            if (hasError === false) { 
+                $('#frmSportLeague').submit();
+            }
+        });
+
+    });
+
+</script>
+
+<script type="text/html" id="rowTemplate">
+                <div class="row rowValue">
+                    <div class="col-lg-1">
+                        <div class="form-group">
+                            <a href="#" class="btnDeleteOption">Delete</a>
+                            <input type="hidden" name="options[__num__][id]" class="id_inp id_inp" />
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label">Title</label>
+                            <input type="text" name="options[__num__][title]" value="" class="form-control title_inp">
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="form-group">
+                            <label class="control-label">Key</label>
+                            <input type="text" name="options[__num__][key]" value="" class="form-control key_inp">
+                        </div>
+                    </div>
+                </div>
+</script>

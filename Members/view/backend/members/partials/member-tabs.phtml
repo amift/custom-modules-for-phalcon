@@ -1,0 +1,46 @@
+<?php
+
+use Members\Entity\Member;
+
+/* @var $member Member */
+
+$tabs = [
+    'general' => [
+        'title' => 'Overview',
+        'url' => $this->url->get(['for' => 'members_view', 'id' => $member->getId()])
+    ],
+    'edit' => [
+        'title' => 'Edit',
+        'url' => $this->url->get(['for' => 'members_edit', 'id' => $member->getId()])
+    ],
+    'articles' => [
+        'title' => 'Articles',
+        'url' => $this->url->get(['for' => 'members_articles', 'id' => $member->getId()])
+    ],
+    'withdraws' => [
+        'title' => 'Withdraws',
+        'url' => $this->url->get(['for' => 'members_withdraws', 'id' => $member->getId()])
+    ],
+    'communication' => [
+        'title' => 'Communication',
+        'url' => $this->url->get(['for' => 'members_communication', 'id' => $member->getId()])
+    ],
+    'authorisations' => [
+        'title' => 'Authorisations log',
+        'url' => $this->url->get(['for' => 'members_authorisations', 'id' => $member->getId(), 'group' => 'success'])
+    ]
+];
+
+?>
+
+    <div class="sp10"></div>
+    <ul class="nav nav-tabs">
+<?php
+    foreach ($tabs as $key => $data) :
+        $class = $tab === $key ? ' class="active"' : '';
+        $url = $tab === $key ? 'javascript:;' : $data['url'];
+?>
+        <li<?php echo $class; ?>><?php echo sprintf('<a href="%s">%s</a>', $url, $data['title']); ?></li>
+<?php endforeach; ?>
+    </ul>
+    <!--<div class="c sp20"></div>-->

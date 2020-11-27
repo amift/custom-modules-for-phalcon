@@ -1,0 +1,32 @@
+<?php
+
+use Members\Entity\Withdraws;
+
+/* @var $withdraw Withdraws */
+
+$tabs = [
+    'general' => [
+        'title' => 'Overview',
+        'url' => $this->url->get(['for' => 'withdraws_view', 'id' => $withdraw->getId()])
+    ],
+];
+if ($withdraw->isPending() || $withdraw->isTransferMoney()) :
+    $tabs['edit'] = [
+        'title' => 'Edit',
+        'url' => $this->url->get(['for' => 'withdraws_edit', 'id' => $withdraw->getId()])
+    ];
+endif;
+
+?>
+
+    <div class="sp10"></div>
+    <ul class="nav nav-tabs">
+<?php
+    foreach ($tabs as $key => $data) :
+        $class = $tab === $key ? ' class="active"' : '';
+        $url = $tab === $key ? 'javascript:;' : $data['url'];
+?>
+        <li<?php echo $class; ?>><?php echo sprintf('<a href="%s">%s</a>', $url, $data['title']); ?></li>
+<?php endforeach; ?>
+    </ul>
+    <!--<div class="c sp20"></div>-->

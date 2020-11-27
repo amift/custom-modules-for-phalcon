@@ -1,0 +1,119 @@
+<?php
+
+    use Bookings\Entity\Booking;
+
+    /* @var $booking Booking */
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="javascript:;" class="btn btn-primary w-100" id="btnSave" tabindex="100">Save</a>
+            <a href="<?php echo $this->url->get(['for' => 'bookings_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>Add booking</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method'  => 'post',
+            'name'    => 'frmBooking',
+            'id'      => 'frmBooking'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Main info</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <?php echo $form->renderWithLabel('type'); ?>
+                    </div>
+                    <div class="col-lg-6">
+                        <?php echo $form->renderWithLabel('action'); ?>
+                    </div>
+                    <div class="col-lg-3">
+                        <?php echo $form->renderWithLabel('date'); ?>
+                    </div>
+                </div>
+                <div class="sp7"></div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <?php echo $form->renderWithLabel('amount'); ?>
+                    </div>
+                    <div class="col-lg-2">
+                        <?php echo $form->renderWithLabel('currency'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Additional info</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <?php echo $form->renderWithLabel('comment'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <?php echo $form->closeTag(); ?>
+
+    <div class="sp75"></div>
+</div>
+
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $('#frmBooking input').each(function() {
+                $(this).removeAttr('disabled');
+            });
+            $('#frmBooking select').each(function() {
+                $(this).removeAttr('disabled').selectpicker('refresh');
+            });
+            $('#frmBooking textarea').each(function() {
+                $(this).removeAttr('disabled').selectpicker('refresh');
+            });
+            $("#frmBooking").submit();
+        });
+    });
+
+</script>

@@ -1,0 +1,80 @@
+<?php
+
+    use System\Entity\CronJob;
+    use System\Entity\CronJobLog;
+
+    /* @var $cronjob CronJob */
+
+    /* @var $log CronJobLog */
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="<?php echo $this->url->get(['for' => 'cronjobs_log', 'id' => $cronjob->getId()]); ?>" class="btn btn-default w-100" tabindex="101">Back</a>
+        </div>
+        <h1>Cron Job log details</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('cronjobs/partials/cronjob-tabs'); ?>
+
+    <div class="tab-content">
+        <div class="tab-pane fade active in">
+            <fieldset>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <label class="control-label">Launched At</label>
+                        <div class="sp7"></div>
+                        <?php echo is_object($log->getLaunchedAt()) ? $log->getLaunchedAt()->format('d/m/Y H:i:s') : '-'; ?>
+                    </div>
+                </div>
+                <div class="sp25"></div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <label class="control-label">Finished At</label>
+                        <div class="sp7"></div>
+                        <?php echo is_object($log->getFinishedAt()) ? $log->getFinishedAt()->format('d/m/Y H:i:s') : '-'; ?>
+                    </div>
+                </div>
+<?php if (trim((string)$log->getErrorMsg()) !== '') : ?>
+                <div class="sp25"></div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label class="control-label">Error Message</label>
+                        <div class="sp7"></div>
+                        <pre class="api-response"><?php echo $log->getErrorMsg(); ?></pre>
+                    </div>
+                </div>
+<?php endif; ?>
+                <div class="sp25"></div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label class="control-label">Stack Trace</label>
+                        <div class="sp7"></div>
+                        <pre class="api-response"><?php echo $log->getStackTrace(); ?></pre>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<style type="text/css">
+   .api-request, .api-response {
+       white-space: pre;
+       font-family: monospace;
+       background-color: #f5f5f5;
+       padding: 5px 10px;
+   }
+</style>

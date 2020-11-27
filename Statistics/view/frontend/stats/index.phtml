@@ -1,0 +1,81 @@
+<?php
+
+    use Statistics\Entity\SportLeague;
+    use Statistics\Entity\SportLeagueGroup;
+    use Statistics\Entity\SportSeason;
+    use Statistics\Entity\SportStatsOverall;
+    use Statistics\Entity\SportTeam;
+    use Statistics\Entity\SportType;
+    use Statistics\Tool\StatsField;
+    use Translations\Tool\Group;
+
+    $this->translator->setGroup(Group::STATISTICS);
+
+    $e = new Phalcon\Escaper();
+
+?>
+
+        <div class="col-md-9 col-sm-9 col-xs-12 full-article">
+            <div class="container-fluid">
+
+                <div class="row heading">
+                    <div class="col-md-12 col-sm-12 col-xs-12 social">
+                        <a href="javascript:;" onclick="sharer.fb('<?php echo $result['fullUrl']; ?>', '<?php echo $this->metaData->getTitle(); ?>', '', '<?php echo $this->metaData->getDescription(); ?>');" title="Facebook" class="fb"><i class="fa fa-facebook"></i></a>
+                        <a href="javascript:;" onclick="sharer.tw('<?php echo $result['fullUrl']; ?>', '<?php echo $this->metaData->getTitle(); ?>', '', '<?php echo $this->metaData->getDescription(); ?>');" title="Twitter" class="tw"><i class="fa fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <div class="row overall">
+                    <div class="col-md-12 title">
+                        <h1><?php echo $this->translator->trans('stats_list_h1_title', 'Statistika'); ?></h1>
+                    </div>
+                </div>
+
+                <div class="row news-body">
+                    <div class="col-md-12">
+                        <div class="container-fluid ballot-history">
+<?php
+    foreach ($result['paginator'] as $overall) {
+        /* @var $overall SportStatsOverall */
+
+        $type = $overall->getSportType();
+        /* @var $type SportType */
+
+        $league = $overall->getSportLeague();
+        /* @var $league SportLeague */
+
+        $season = $overall->getSportSeason();
+        /* @var $season SportSeason */
+
+        $statsParams = sprintf('%s-%s-%s', $type->getId(), $league->getId(), $season->getId());
+?>
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-4 date"><?php echo $type->getTitle() . ' / ' . $league->getTitle(); ?></div>
+                                <div class="col-md-8 col-sm-8 col-xs-8 question">
+                                    <a href="<?php echo $this->url->get(['for' => 'stats_full_table', 'seasonkey' => $statsParams]); ?>" title="<?php echo $e->escapeHtmlAttr($season->getTitle()); ?>"><?php echo $season->getTitle(); ?></a>
+                                </div>
+                            </div>
+<?php } ?>
+<?php 
+    if ($result['fullUrl'] !== '') : 
+        echo $this->gridPager->links($result['fullUrl'], $result['paginator'], $result['currentPage'], $result['perPage'], 7, 'partials/paginationNews');
+    endif;                
+?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-3 col-xs-12 recent-news right-side">
+            <div class="banners">
+                <div class="single-banner banner160x600px">
+                    <a href="<?php echo $this->url->get(['for' => 'document_advertising_opportunities']); ?>" title="<?php echo $this->translator->trans('link_text_learn_more', 'Uzzini vairāk', Group::NOT_SET); ?>">
+                        <img src="/assets/img/160x0600px-blank.jpg" border="0" />
+                    </a>
+                </div>
+            </div>
+        </div>
+
+<?php $this->translator->unsetGroup(); ?>

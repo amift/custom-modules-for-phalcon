@@ -1,0 +1,208 @@
+<?php
+
+    use Articles\Entity\Article;
+    use Translations\Tool\Group;
+
+    $this->translator->setGroup(Group::ARTICLES);
+
+    $e = new Phalcon\Escaper();
+
+    if (isset($articles['masonry']) && $articles['masonry'] === true) :
+?>
+            <div class="col-lg-10 col-md-9 col-sm-9 col-xs-12 articles">
+                <ul class="columns" id="blockArticles">
+<?php
+        if ($articles['center']['paginator'] !== null && count($articles['center']['paginator']) > 0) :
+            foreach ($articles['center']['paginator'] as $article) :
+                /* @var $article Article */
+
+                //$videoImage = $article->getVideoSourceImagePath();
+                //$isVideo = $videoImage !== '' ? tue : false;
+
+                $isVideo = $article->isVideo();
+
+?>
+                    <li class="article">
+                        <div class="container-fluid">
+                            <div class="row">
+                            <?php if ($article->hasImage() || $isVideo) : ?>
+                                <div class="col-md-12 col-sm-12 col-xs-12 pic">
+                            <?php else : ?>
+                                <div class="col-md-12 col-sm-12 col-xs-12 pic no-pic">
+                            <?php endif; ?>
+                                    <span class="time"><?php echo $article->getListViewDate(); ?><span class="category"><?php if ($isVideo) : ?><i class="fa fa-video-camera"></i><?php endif; ?><?php echo $article->getCategoryLvl1()->getTitle(); ?></span></span>
+                            <?php if ($article->hasImage()) : ?>
+                                    <a href="<?php echo $article->getFullUrl(); ?>" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" class="placeholder">
+                                        <?php /* ?><img src="" data-original="<?php echo $article->getImagePublicPath(); ?>" class="lazy img-responsive" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" border="0" />
+                                        <?php */ ?><img src="<?php echo $article->getImagePublicPath(); ?>" class="img-responsive" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" border="0" />
+                                    </a>
+                            <?php elseif ($isVideo) : ?>
+                                    <?php echo $article->getFormattedVideoSource(); ?>
+                            <?php endif; ?>
+                                </div>
+                                <div class="col-md-12 col-sm-12 col-xs-12 article">
+                                    <a href="<?php echo $article->getFullUrl(); ?>" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" class="link"><?php echo $article->getTitle(); ?></a>
+                                    <span class="dd"><?php echo $article->getSummary(); ?> <a href="<?php echo $article->getFullUrl(); ?>" class="comment"><?php echo $article->getFormattedCommentsCount(); ?></a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+<?php
+            endforeach;
+        endif;
+?>
+                </ul>
+                <div class="load-more" id="blockArticleLoader">
+<?php 
+    if ($articles['fullUrl'] !== '') : 
+        echo $this->gridPager->links($articles['fullUrl'], $articles['center']['paginator'], $articles['center']['currentPage'], $articles['center']['perPage'], 7, 'partials/paginationNews');
+    endif;
+    /*
+?>
+                    <a href="javascript:;" onclick="articles.loadMore('<?php echo $this->url->get(['for' => 'articles_load_more']); ?>', '<?php echo (string)$category; ?>', '<?php echo (string)$subcategory; ?>', 5);" rel="nofollow" title="<?php echo $this->translator->trans('articles-load-more', 'Ielādēt vēl'); ?>"><?php echo $this->translator->trans('articles-load-more', 'Ielādēt vēl'); ?></a>
+<?php */ ?>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-3 col-xs-12 right-col">
+<?php
+        if (isset($categoryParams) && array_key_exists('name', $categoryParams) && array_key_exists('value', $categoryParams)) {
+            echo $this->pollsRenderer->renderSideBarPoll($categoryParams['name'], $categoryParams['value']);
+        }
+
+        echo $this->statisticsRenderer->renderSideBarStatsTable($categoryParams['name'], $categoryParams['value']);
+?>
+            </div>
+<?php
+    else :
+        
+
+    if (is_object($articles['promo'])) :
+        $article = $articles['promo'];
+        /* @var $article Article */
+?>
+        <div class="col-md-12 col-sm-12 col-xs-12 landing-banner">
+            <div class="article">
+                <div class="info">
+                    <span class="category"><?php echo $article->getCategoryLvl1()->getTitle(); ?></span>
+                    <h2><a href="<?php echo $article->getFullUrl(); ?>" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>"><?php echo $article->getTitle(); ?></a></h2>
+                    <?php /* ?><span class="dd"><?php echo $article->getSummary(); ?> <a href="<?php echo $article->getFullUrl(); ?>" class="comments"><?php echo $article->getFormattedCommentsCount(); ?></a></span><?php */ ?>
+                    <div class="social">
+                        <a href="javascript:;" onclick="sharer.fb('<?php echo $this->config->web_url . $article->getFullUrl(); ?>', '<?php echo $this->metaData->getLikeMetaTitle($article->getTitle()); ?>', '', '<?php echo $this->metaData->getLikeMetaDescription($article->getSummary()); ?>');" title="Facebook" class="fb"><i class="fa fa-facebook"></i></a>
+                        <a href="javascript:;" onclick="sharer.tw('<?php echo $this->config->web_url . $article->getFullUrl(); ?>', '<?php echo $this->metaData->getLikeMetaTitle($article->getTitle()); ?>', '', '<?php echo $this->metaData->getLikeMetaDescription($article->getSummary()); ?>');" title="Twitter" class="tw"><i class="fa fa-twitter"></i></a>
+                    </div>
+                </div>
+            <?php if ($article->hasImage()) : ?>
+                <img src="<?php echo $article->getImagePublicPath(); ?>" class="img-responsive" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" border="0" />
+            <?php endif; ?>
+            </div>
+        </div>
+<?php endif; ?>
+
+
+        <div class="col-md-3 col-sm-3 col-xs-12 recent-news">
+            <h3>
+                <i class="fa fa-bolt"></i><?php echo $this->translator->trans('side_news_title', 'Aktuāli'); ?>
+                <a href="<?php echo $this->url->get(['for' => 'article_add_textual']); ?>" title="<?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu', Group::NOT_SET); ?>"><span class="title"><?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu', Group::NOT_SET); ?></span><i class="fa fa-plus"></i></a>
+            </h3>
+<?php
+if ($articles['side']['news'] !== null && count($articles['side']['news']) > 0) :
+    foreach ($articles['side']['news'] as $article) :
+        /* @var $article Article */
+?>
+            <dl>
+                <dt><?php echo $article->getCategoryLvl1()->getTitle(); ?></dt>
+                <dd><span class="time"><?php echo $article->getListViewDate(); ?></span><?php if ($article->isVideo()) : ?><i class="fa fa-video-camera"></i><?php endif; ?><a href="<?php echo $article->getFullUrl(); ?>" class="article"><?php echo $article->getTitle(); ?></a><a href="<?php echo $article->getFullUrl(); ?>" class="comment"><?php echo $article->getFormattedCommentsCount(); ?></a></dd>
+            </dl>
+<?php endforeach; ?>
+            <?php /* ?><div class="load-more">
+                <a href="/" title="More">More</a>
+            </div><?php */ ?>
+<?php endif; ?>
+<?php echo $this->statisticsRenderer->renderSideBarStatsTable($categoryParams['name'], $categoryParams['value']); ?>
+        </div>
+
+
+        <div class="col-md-6 col-sm-6 col-xs-12 regular-news">
+            <div class="container-fluid">
+<?php
+if ($articles['center']['paginator'] !== null && count($articles['center']['paginator']) > 0) :
+    foreach ($articles['center']['paginator'] as $article) :
+        /* @var $article Article */
+
+        $videoImage = $article->getVideoSourceImagePath();
+?>
+                <div class="row">
+                <?php if ($article->hasImage()) : ?>
+                    <div class="col-md-12 col-sm-12 col-xs-12 pic">
+                        <a href="<?php echo $article->getFullUrl(); ?>" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" class="placeholder">
+                            <img src="" data-original="<?php echo $article->getImagePublicPath(); ?>" class="lazy img-responsive" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" border="0" />
+                        </a>
+                    </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12 article">
+                <?php elseif ($videoImage !== '') : ?>
+                    <div class="col-md-4 col-sm-12 col-xs-12 pic" style="padding-right: 20px;">
+                        <a href="<?php echo $article->getFullUrl(); ?>" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" class="placeholder">
+                            <img src="" data-original="<?php echo $videoImage; ?>" class="lazy img-responsive" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" border="0" />
+                        </a>
+                    </div>
+                    <div class="col-md-8 col-sm-12 col-xs-12 article">
+                <?php else : ?>
+                    <div class="col-md-12 col-sm-12 col-xs-12 article">
+                <?php endif; ?>
+                        <span class="time"><?php echo $article->getListViewDate(); ?><span class="category"><?php if ($article->isVideo()) : ?><i class="fa fa-video-camera"></i> &nbsp; <?php endif; ?><?php echo $article->getCategoryLvl1()->getTitle(); ?></span></span>
+                        <a href="<?php echo $article->getFullUrl(); ?>" title="<?php echo $e->escapeHtmlAttr($article->getTitle()); ?>" class="link"><?php echo $article->getTitle(); ?></a>
+                        <span class="dd"><?php echo $article->getSummary(); ?> <a href="<?php echo $article->getFullUrl(); ?>" class="comment"><?php echo $article->getFormattedCommentsCount(); ?></a></span>
+                    </div>
+                </div>
+<?php endforeach; ?>
+<?php 
+    if ($articles['fullUrl'] !== '') : 
+        echo $this->gridPager->links($articles['fullUrl'], $articles['center']['paginator'], $articles['center']['currentPage'], $articles['center']['perPage'], 7, 'partials/paginationNews');
+    endif;                
+?>
+<?php endif; ?>
+            </div>
+        </div>
+
+
+        <div class="col-md-3 col-sm-3 col-xs-12 video-news">
+            <h4>
+                <i class="fa fa-video-camera"></i><?php echo $this->translator->trans('side_video_title', 'Video'); ?>
+                <a href="<?php echo $this->url->get(['for' => 'article_add_video']); ?>" title="<?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu', Group::NOT_SET); ?>"><i class="fa fa-plus"></i></a>
+            </h4>
+<?php
+if ($articles['side']['video'] !== null && count($articles['side']['video']) > 0) :
+    foreach ($articles['side']['video'] as $article) :
+        /* @var $article Article */
+?>
+            <dl>
+                <dt><?php echo $article->getCategoryLvl1()->getTitle(); ?></dt>
+                <dd>
+                    <?php echo $article->getFormattedVideoSource(); ?>
+                    <span class="time"><?php echo $article->getListViewDate(); ?></span><a href="<?php echo $article->getFullUrl(); ?>" class="article"><?php echo $article->getTitle(); ?></a><a href="<?php echo $article->getFullUrl(); ?>" class="comment"><?php echo $article->getFormattedCommentsCount(); ?></a>
+                </dd>
+            </dl>
+<?php endforeach; ?>
+            <?php /* ?><div class="load-more">
+                <a href="/" title="More">More</a>
+            </div><?php */ ?>
+<?php endif; ?>
+
+<?php
+if (isset($categoryParams) && array_key_exists('name', $categoryParams) && array_key_exists('value', $categoryParams)) {
+    echo $this->pollsRenderer->renderSideBarPoll($categoryParams['name'], $categoryParams['value']);
+}
+?>
+
+            <div class="banners">
+                <div class="single-banner banner160x600px">
+                    <a href="<?php echo $this->url->get(['for' => 'document_how_it_works']); ?>" title="<?php echo $this->translator->trans('link_text_learn_more', 'Uzzini vairāk'); ?>">
+                        <img src="/assets/img/160x600_v2.jpg" border="0" />
+                    </a>
+                </div>
+            </div>
+        </div>
+
+<?php endif; ?>
+
+<?php $this->translator->unsetGroup(); ?>

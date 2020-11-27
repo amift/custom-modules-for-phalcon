@@ -1,0 +1,19 @@
+<?php $this->translator->setGroup(\Translations\Tool\Group::ARTICLES); ?>
+
+            <div class="container-fluid easy-steps">
+                <div class="row earn">
+                    <div class="col-md-4 col-sm-4 col-xs-12 step">
+                        <span class="circle"><i class="fa fa-check"></i></span>
+                        <span class="title"><?php echo $this->translator->trans('add_article_top_info_1_add_news', 'Pievieno ziņu'); ?></span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 step">
+                        <span class="circle"><span class="pts"><?php echo $this->translator->trans('add_article_top_info_2_pts_text', '+20'); ?></span></span>
+                        <span class="title"><?php echo $this->translator->trans('add_article_top_info_2_receive_points', 'Saņem punktus'); ?></span>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 step">
+                        <span class="circle"><?php echo $this->translator->trans('add_article_top_info_3_currency', '€'); ?></span>
+                        <span class="title"><?php echo $this->translator->trans('add_article_top_info_3_exchange_to_money', 'Apmaini pret naudu'); ?></span>
+                    </div>
+                </div>
+            </div>
+<?php $this->translator->unsetGroup(); ?>

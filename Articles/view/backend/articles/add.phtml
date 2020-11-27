@@ -1,0 +1,27 @@
+<?php
+
+    use Articles\Entity\Article;
+
+    /* @var $article Article */
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="javascript:;" class="btn btn-primary w-100" id="btnSave" tabindex="100">Save</a>
+            <a href="<?php echo $this->url->get(['for' => 'articles_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>Add article</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->partial('articles/partials/form-fields'); ?>
+
+    <div class="sp75"></div>
+</div>

@@ -1,0 +1,161 @@
+<?php
+
+    use Common\Tool\Enable;
+    use Polls\Entity\Poll;
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+            <?php echo $this->tag->linkTo([['for' => 'polls_add'], 'Add new', 'class' => 'btn btn-default w-95']); ?>
+        </div>
+        <h1>Polls</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('polls/partials/list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:55px;">ID</th>
+                <th style="width:150px;">Category</th>
+                <th>Title</th>
+                <th style="width:75px;">Votes</th>
+                <th style="width:75px;">Date</th>
+                <th style="width:75px;">Startpage</th>
+                <th style="width:95px;">Status</th>
+                <th style="width:85px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    foreach ($paginator as $poll) {
+        /* @var $poll Poll */
+
+        $cats = $poll->getCategoriesIdAndTitleAsArray();
+?>
+            <tr>
+                <td><?php echo $poll->getId(); ?></td>
+                <td><?php echo count($cats) > 0 ? implode(' / ', $cats) : '-'; ?></td>
+                <td><?php echo $poll->getTitle(); ?></td>
+                <td><?php echo $poll->getVotesCount(); ?></td>
+                <td><?php if (is_object($poll->getPublicationDate())) : ?>
+                    <div class="fs-1214"><?php echo $poll->getPublicationDate()->format('d/m/y'); ?></div>
+                    <div class="fs-1214"><?php echo $poll->getPublicationDate()->format('H:i:s'); ?></div>
+                <?php else :
+                        echo '-';
+                    endif;
+                ?></td>
+                <td><?php echo $this->enableStatus->tableByCustomValue($poll->getStartpage(), Enable::getShortLabels()); ?></td>
+                <td><?php echo $this->pollStatus->table($poll); ?></td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'polls_view', 'id' => $poll->getId()], 'View']); ?>
+                        &nbsp; 
+                        <?php echo $this->tag->linkTo([['for' => 'polls_edit', 'id' => $poll->getId()], 'Edit']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Init list filters and search actions
+        gridFilter.init('<?php echo $this->url->get(['for' => 'polls_list']); ?>');
+
+        // Attach Date calendars intervals checking
+        $('#publicationDateFrom').datetimepicker({
+            useCurrent: false,
+            maxDate: moment(),
+            format: 'DD/MM/YYYY'
+        }).on("dp.change", function (e) {
+            $('#publicationDateTo').data("DateTimePicker").minDate(e.date);
+        });
+        $('#publicationDateTo').datetimepicker({
+            useCurrent: false,
+            maxDate: moment(),
+            format: 'DD/MM/YYYY'
+        }).on("dp.change", function (e) {
+            $('#publicationDateFrom').data("DateTimePicker").maxDate(e.date);
+        });
+
+        // Disable category2, category3 fields when category1 empty
+        if ($("#categoryLvl1").find(":selected").val() === '') {
+            disableSelectField('#categoryLvl2');
+            disableSelectField('#categoryLvl3');
+        }
+
+        // Disable category3 fields when category2 empty
+        if ($("#categoryLvl2").find(":selected").val() === '') {
+            disableSelectField('#categoryLvl3');
+        }
+
+        // Reload cat2 on cat1 change
+        $("#categoryLvl1").change(function() {
+            var cat1_id = $(this).find(":selected").val();
+            if (parseInt(cat1_id) > 0) {
+                var request = $.ajax({
+                    type: 'GET',
+                    url: '<?php echo $this->url->get(['for' => 'article_categories_ajax_load']); ?>' + cat1_id
+                });
+                request.done(function(data){
+                    var data = $.parseJSON(data);
+                    refillSelectFieldOptions('#categoryLvl2', data.data);
+                    clearSelectFieldOptions('#categoryLvl3');
+                });
+            } else {
+                clearSelectFieldOptions('#categoryLvl2');
+                clearSelectFieldOptions('#categoryLvl3');
+            }
+        });
+
+        // Reload cat3 on cat2 change
+        $("#categoryLvl2").change(function() {
+            var cat2_id = $(this).find(":selected").val();
+            if (parseInt(cat2_id) > 0) {
+                var request = $.ajax({
+                    type: 'GET',
+                    url: '<?php echo $this->url->get(['for' => 'article_categories_ajax_load']); ?>' + cat2_id
+                });
+                request.done(function(data){
+                    var data = $.parseJSON(data);
+                    refillSelectFieldOptions('#categoryLvl3', data.data);
+                });
+            } else {
+                clearSelectFieldOptions('#categoryLvl3');
+            }
+        });
+
+    });
+</script>
+

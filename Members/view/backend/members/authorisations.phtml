@@ -1,0 +1,73 @@
+<?php
+
+    use Members\Entity\FailedLogin;
+    use Members\Entity\Member;
+    use Members\Entity\SuccessLogin;
+
+    /* @var $member Member */
+
+?>
+
+<?php echo $this->partial('members/partials/member-header'); ?>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('members/partials/member-tabs'); ?>
+
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="authorisations_tab">
+
+            <div class="sp27"></div>
+            <div class="fs-3036">Authorisations</div>
+            <div class="sp20"></div>
+
+            <ul class="nav nav-pills" role="tablist">
+<?php
+foreach ($groups as $g) {
+    $url = $this->url->get(['for' => 'members_authorisations', 'id' => $member->getId(), 'group' => $g['group']]);
+?>
+                <li<?php echo $g['selected'] ? ' class="active"' : ''; ?>>
+                    <a role="tab" href="<?php echo $url; ?>"><?php echo $g['title']; ?></a>
+                </li>
+<?php } ?>
+            </ul>
+            <div class="sp26"></div>
+
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:85px;">ID</th>
+                        <th style="width:140px;">Date</th>
+                        <th>IP</th>
+                        <th>User Agent</th>
+                    </tr>
+                </thead>
+                <tbody>
+<?php foreach ($paginator as $row) { ?>
+                    <tr>
+                        <td><?php echo $row->getId(); ?></td>
+                        <td><?php if (is_object($row->getDate())) : ?>
+                            <div><?php echo $row->getDate()->format('d/m/y H:i:s'); ?></div>
+                        <?php else :
+                                echo '-';
+                            endif;
+                        ?></td>
+                        <td><?php echo $row->getIpAddress(); ?></td>
+                        <td><?php echo $row->getUserAgent(); ?></td>
+                    </tr>
+<?php } ?>
+                </tbody>
+            </table>
+
+            <div class="sp50"></div>
+            <div class="table_footer">
+                <?php echo $this->gridPager->links($paginator, [], $currentPage, $perPage); ?>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="sp75"></div>
+</div>

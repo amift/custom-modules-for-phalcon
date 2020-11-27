@@ -1,0 +1,55 @@
+<?php
+
+if (count($pagesInRange) > 1) :
+
+    $toFirstPageUrl = $onePageLeftUrl = '#';
+    $toFirstPageClass = $onePageLeftClass = '';
+    if ($currentPageNumber > 1) :
+        $toFirstPageUrl = '?' . $this->gridPager->getUrlQuery($activeParameters, [ $parameterNames['currentPage'] => 1 ]);
+        $onePageLeftUrl = '?' . $this->gridPager->getUrlQuery($activeParameters, [ $parameterNames['currentPage'] => ($currentPageNumber - 1) ]);
+    else :
+        $toFirstPageClass = $onePageLeftClass = ' class="disabled"';
+    endif;
+    
+    // one page right and to last page
+    $toLastPageUrl = $onePageRightUrl = '#';
+    $toLastPageClass = $onePageRightClass = '';
+    if ($currentPageNumber < $pageCount) :
+        $toLastPageUrl = '?' . $this->gridPager->getUrlQuery($activeParameters, [ $parameterNames['currentPage'] => $pageCount ]);
+        $onePageRightUrl = '?' . $this->gridPager->getUrlQuery($activeParameters, [ $parameterNames['currentPage'] => ($currentPageNumber + 1) ]);
+    else :
+        $toLastPageClass = $onePageRightClass = ' class="disabled"';
+    endif;
+?>
+    <ul class="pagination" style="margin: 0px;">
+        <li<?php echo $toFirstPageClass; ?>><a href="<?php echo $toFirstPageUrl; ?>">&laquo;</a></li>
+        <li<?php echo $onePageLeftClass; ?>><a href="<?php echo $onePageLeftUrl; ?>">&lsaquo;</a></li>
+<?php
+    foreach ($pagesInRange as $page) :
+        $page = (int)$page;
+
+        $pageClass = '';
+        if ((int)$currentPageNumber === (int)$page) {
+            $pageClass = ' class="active"';
+        }
+
+        $pageUrl = '#';
+        if ($currentPageNumber != $page) {
+            $pageUrl = '?' . $this->gridPager->getUrlQuery($activeParameters, [ $parameterNames['currentPage'] => $page ]);
+        }
+?>
+            <li<?php echo $pageClass; ?>><a href="<?php echo $pageUrl; ?>"><?php echo $page; ?></a></li>
+<?php endforeach; ?>
+        <li<?php echo $onePageRightClass; ?>><a href="<?php echo $onePageRightUrl; ?>">&rsaquo;</a></li>
+        <li<?php echo $toLastPageClass; ?>><a href="<?php echo $toLastPageUrl; ?>">&raquo;</a></li>
+    </ul>
+<?php endif; ?>
+
+<?php if ($intervalEnd > 0) : ?>
+    <div class="pagination_numbers<?php echo (count($pagesInRange) > 1 ? '' : ' no_left_margin'); ?>">
+        Showing items 
+        <b><?php echo sprintf('%s - %s', $intervalStart, $intervalEnd); ?></b>
+        of 
+        <b><?php echo $totalCount; ?></b>
+    </div>
+<?php endif; ?>

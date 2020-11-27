@@ -1,0 +1,140 @@
+<?php
+
+    use Members\Entity\Member;
+    use Members\Entity\TotalPoints;
+    use Members\Tool\Confirmed;
+
+    /* @var $member Member */
+
+    $totals = $member->getTotalPointsData();
+    /* @var $totals TotalPoints */
+
+?>
+
+<?php echo $this->partial('members/partials/member-header'); ?>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <?php echo $this->partial('members/partials/member-tabs'); ?>
+
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="overview_tab">
+
+            <table class="twocol_r400"><tbody><tr>
+                <td class="leftcol pb0">
+
+                    <div class="twocol_border p29 col1pl0">
+                        <div class="col1">
+
+                            <div class="sp27"></div>
+                            <h2>Main Information</h2>
+                            <div class="sp21"></div>
+                            <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                                <tr>
+                                    <td>ID</td>
+                                    <td><b><?php echo $member->getId(); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Username</td>
+                                    <td><b><?php echo $member->getUsername(); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>E-mail</td>
+                                    <td><b><a href="mailto:<?php echo $member->getEmail(); ?>"><?php echo $member->getEmail(); ?></a></b></td>
+                                </tr>
+                            </tbody></table>
+                            <div class="sp24"></div>
+
+                        </div>
+                        <div class="col2">
+
+                            <div class="sp27"></div>
+                            <h2>Other</h2>
+                            <div class="sp21"></div>
+                            <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                                <tr>
+                                    <td>Created</td>
+                                    <td><b><?php echo is_object($member->getCreatedAt()) ? $member->getCreatedAt()->format('d/m/Y H:i') : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Created from</td>
+                                    <td><b><?php echo $member->getCreatedFromIp() !== ''  ? $member->getCreatedFromIp() : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Last login at</td>
+                                    <td><b><?php echo is_object($member->getLoginLastAt()) ? $member->getLoginLastAt()->format('d/m/Y H:i') : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Last login from</td>
+                                    <td><b><?php echo $member->getLoginLastIp() !== '' ? $member->getLoginLastIp() : '-'; ?></b></td>
+                                </tr>
+                            </tbody></table>
+                            <div class="sp24"></div>
+
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="twocol_border p29 col1pl0">
+                        <div class="col1">
+
+                            <div class="sp27"></div>
+                            <h2>Total Points</h2>
+                            <div class="sp21"></div>
+                            <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                                <tr>
+                                    <td>Earned</td>
+                                    <td><b><?php echo is_object($totals) ? $totals->getTotalEarned() : '0'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Withdrawed</td>
+                                    <td><b><?php echo is_object($totals) ? $totals->getTotalWithdrawed() : '0'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Actual</td>
+                                    <td><b><?php echo is_object($totals) ? $totals->getTotalActual() : '0'; ?></b></td>
+                                </tr>
+                            </tbody></table>
+                            <div class="sp24"></div>
+
+                        </div>
+                    </div>
+
+                </td>
+                <td class="rightcol gray">
+
+                    <div class="status-title">Status</div>
+                    <div class="sp12"></div>
+                    <?php echo $this->memberStatus->big($member); ?>
+                    <?php echo $this->dateChangedAt->format($member->getStateChangedAt()); ?>
+
+                    <div class="sp27"></div>
+                    <hr>
+                    <div class="sp26"></div>
+
+                    <div class="status-title">Confirmed</div>
+                    <div class="sp12"></div>
+                    <?php echo $this->enableStatus->big($member, Confirmed::getLabels(), Confirmed::getStyles()); ?>
+                    <?php echo $this->dateChangedAt->format($member->getConfirmedAt()); ?>
+
+                </td>
+            </tr></tbody></table>
+
+        </div>
+    </div>
+
+    <div class="sp75"></div>
+</div>

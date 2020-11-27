@@ -1,0 +1,132 @@
+<?php
+
+    use Common\Tool\Enable;
+    use Polls\Entity\Poll;
+
+    /* @var $poll Poll */
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="<?php echo $this->url->get(['for' => 'polls_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>View poll</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="overview_tab">
+
+            <div class="sp34"></div>
+            <div class="row">
+                <div class="col-xs-3">
+                    <div class="fs-3036">Main info</div>
+                </div>
+                <div class="col-xs-9">
+                    <div class="sp4"></div>
+                    <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                        <tr>
+                            <td style="width: 200px;">ID</td>
+                            <td><b><?php echo $poll->getId(); ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td><b><?php echo is_object($poll->getDate()) ? $poll->getDate()->format('d/m/Y H:i') : '-'; ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Title</td>
+                            <td><b><?php echo $poll->getTitle(); ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Summary (description)</td>
+                            <td><b><?php echo trim(strip_tags($poll->getContent())) !== '' ? $poll->getContent() : '-'; ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td><?php echo $this->pollStatus->table($poll); ?></td>
+                        </tr>
+                        <tr>
+                            <td>Startpage</td>
+                            <td><b><?php echo $this->enableStatus->tableByCustomValue($poll->getStartpage(), Enable::getShortLabels()); ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Total votes</td>
+                            <td><b><?php echo $poll->getVotesCount(); ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Total comments</td>
+                            <td><b><?php echo $poll->getCommentsCount(); ?></b></td>
+                        </tr>
+                    </tbody></table>
+                </div>
+            </div>
+
+            <div class="sp40"></div>
+            <hr>
+            <div class="sp34"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <div class="fs-3036">Category</div>
+                </div>
+                <div class="col-xs-9">
+                    <div class="sp4"></div>
+                    <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                        <tr>
+                            <td style="width: 200px;">Category 1</td>
+                            <td><b><?php echo is_object($poll->getCategoryLvl1()) ? $poll->getCategoryLvl1()->getTitle() : '-'; ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Category 2</td>
+                            <td><b><?php echo is_object($poll->getCategoryLvl2()) ? $poll->getCategoryLvl2()->getTitle() : '-'; ?></b></td>
+                        </tr>
+                        <tr>
+                            <td>Category 3</td>
+                            <td><b><?php echo is_object($poll->getCategoryLvl3()) ? $poll->getCategoryLvl3()->getTitle() : '-'; ?></b></td>
+                        </tr>
+                    </tbody></table>
+                </div>
+            </div>
+
+            <div class="sp40"></div>
+            <hr>
+            <div class="sp34"></div>
+
+            <div class="row">
+                <div class="col-xs-3">
+                    <div class="fs-3036">Options with results</div>
+                </div>
+                <div class="col-xs-9">
+                    <div class="sp4"></div>
+                    <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+<?php foreach ($poll->getOptions() as $option) { ?>
+                        <tr>
+                            <td>
+                                <b><?php echo $option->getTitle(); ?></b>, Total votes: <?php echo $option->getVotesCount(); ?>
+                                <div class="sp4"></div>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="<?php echo $option->getVotesPercent(); ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $option->getVotesPercent(); ?>%">
+                                        <?php echo $option->getVotesPercent() . '%'; ?>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+<?php } ?>
+                    </tbody></table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="sp75"></div>
+</div>

@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="row">
+
+        <?php
+            echo $form->openTag($action, [
+                'class'  => 'col-lg-4 col-lg-offset-4 login',
+                'method' => 'post',
+                'name'   => 'frmSignIn',
+                'id'     => 'frmSignIn'
+            ]);
+        ?>
+            <div class="sp100"></div>
+            <img src="/assets/admin/img/allsports-admin-logo.png">
+            <div class="sp30"></div>
+            <hr>
+            <div class="sp30"></div>
+            <h1>Sign In</h1>
+            <div class="sp30"></div>
+
+        <?php if (isset($error) && $error !== '') :  ?>
+            <div class="alert alert-danger" role="alert">
+                Authentication failed.<br>
+                <?php echo $error; ?>
+            </div>
+        <?php endif; ?>
+
+            <?php echo $form->renderWithoutLabel('email'); ?>
+
+            <?php echo $form->renderWithoutLabel('password'); ?>
+            <div class="sp30"></div>
+
+            <?php echo $form->render("csrf"); ?>
+            <?php echo $form->render("go"); ?>
+
+        <?php echo $form->closeTag(); ?>
+    </div>
+</div>

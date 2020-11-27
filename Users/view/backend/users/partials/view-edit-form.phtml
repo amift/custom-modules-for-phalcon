@@ -1,0 +1,48 @@
+    <div class="tab-content">
+        <div class="tab-pane fade in active">
+
+            <?php
+                echo $form->openTag($action, [
+                    'class'  => 'row',
+                    'method' => 'post',
+                    'name'   => 'frmUserEdit',
+                    'id'     => 'frmUserEdit'
+                ]);
+            ?>
+                <fieldset<?php echo (!$isEdit ? ' disabled="disabled"' : ''); ?>>
+                    <div class="col-lg-8">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <?php echo $form->renderWithLabel('firstName'); ?>
+                            </div>
+                            <div class="col-lg-6">
+                                <?php echo $form->renderWithLabel('phone'); ?>
+                            </div>
+                        </div>
+                        <div class="sp7"></div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <?php echo $form->renderWithLabel('lastName'); ?>
+                            </div>
+                            <div class="col-lg-6">
+                                <?php echo $form->renderWithLabel('state'); ?>
+                            </div>
+                        </div>
+                        <div class="sp7"></div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <?php echo $form->renderWithLabel('email'); ?>
+                            </div>
+                            <div class="col-lg-6">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4"></div>
+
+                    <?php echo $form->render("id"); ?>
+                    <?php echo $form->render("csrf"); ?>
+                </fieldset>
+            <?php echo $form->closeTag(); ?>
+
+        </div>
+    </div>

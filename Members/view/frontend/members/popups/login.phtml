@@ -1,0 +1,37 @@
+<?php
+
+use Translations\Tool\Group;
+
+$this->translator->setGroup(Group::MEMBERS);
+
+?>
+
+                <div class="modal-header">
+                    <a href="javascript:;" class="close-popup" data-dismiss="modal" aria-label="<?php echo $this->translator->trans('popup_btn_close', 'Aizvērt'); ?>"><i class="fa fa-remove"></i></a>
+                    <h4 class="modal-title"><?php echo $this->translator->trans('login_popup_form_title_authorisation', 'Autorizācija'); ?></h4>
+                </div>
+                <div class="modal-body">
+                    <?php
+                        echo $form->openTag($action, [
+                            'method' => 'post',
+                            'name'   => 'frmPopupSignIn',
+                            'id'     => 'frmPopupSignIn'
+                        ]);
+                    ?>
+                        <div class="form-row">
+                            <i class="fa fa-envelope-o"></i>
+                            <?php echo $form->render('login_email'); ?>
+                        </div>
+                        <div class="form-row">
+                            <i class="fa fa-lock"></i>
+                            <?php echo $form->render('login_password'); ?>
+                        </div>
+                    <?php echo $form->closeTag(); ?>
+                    <a href="javascript:;" class="btn" id="btnLoginPopup" tabindex="3" title="<?php echo $this->translator->trans('login_popup_btn_login', 'Ienākt'); ?>"><?php echo $this->translator->trans('login_popup_btn_login', 'Ienākt'); ?></a>
+                    <a href="javascript:;" data-toggle="modal" data-target="#ResetPassword" class="forgot-pass" tabindex="4" title="<?php echo $this->translator->trans('login_popup_link_lost_password', 'Aizmirsi paroli?'); ?>"><?php echo $this->translator->trans('login_popup_link_lost_password', 'Aizmirsi paroli?'); ?></a>
+                </div>
+                <div class="modal-footer">
+                    <span class="allsports"></span>
+                </div>
+
+<?php $this->translator->unsetGroup(); ?>

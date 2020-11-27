@@ -1,0 +1,123 @@
+<?php
+
+    use Statistics\Entity\SportLeague;
+    use Statistics\Entity\SportLeagueGroup;
+    use Statistics\Entity\SportSeason;
+    use Statistics\Entity\SportStatsOverall;
+    use Statistics\Entity\SportTeam;
+    use Statistics\Entity\SportType;
+    use Statistics\Tool\StatsField;
+
+    /* @var $sportType SportType */
+
+    /* @var $sportLeague SportLeague */
+
+    /* @var $sportLeagueGroup SportLeagueGroup */
+
+    /* @var $season SportSeason */
+
+    $titleParts = [
+        $sportType->getTitle(),
+        $sportLeague->getTitle(),
+        $season->getTitle(),
+        $sportLeagueGroup->getTitle(),
+    ];
+
+    $scoreField = $sportType->getSoreField();
+    $tableFields = $sportType->getTableFields();
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="<?php echo $this->url->get(['for' => 'sport_stats_overall_list']); ?>" class="btn btn-default w-100" tabindex="101">Back</a>
+        </div>
+        <h1><?php echo sprintf('%s<br>Statistics Overall', implode(' / ', $titleParts)); ?></h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <div class="sp15"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+<?php if (in_array(StatsField::FIELD_PLACE, $tableFields)) : ?>
+                <th>Place</th>
+<?php endif; ?>
+                <th>Team</th>
+<?php
+    foreach ($tableFields as $fieldKey) {
+        if ($fieldKey === StatsField::FIELD_PLACE) {
+            continue;
+        }
+        $class = $fieldKey === $scoreField ? ' class="gray-bg"' : '';
+?>
+                <th<?php echo $class; ?>><?php echo StatsField::getLabel($fieldKey); ?></th>
+<?php
+    }
+?>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+        foreach ($table as $row) {
+            /* @var $row SportStatsOverall */
+
+            $team = $row->getSportTeam();
+            /* @var $team SportTeam */
+            
+            $scoreClass = (int)$row->getDifferent() < 0 ? 'red-text' : 'green-text';
+            
+            $hasFlagCode = (string)$team->getFlagCode() !== '' ? true : false;
+?>
+            <tr>
+<?php if (in_array(StatsField::FIELD_PLACE, $tableFields)) : ?>
+                <td><?php echo $row->getPlace(); ?></td>
+<?php endif; ?>
+                <td><?php if ($hasFlagCode) : ?><i class="flag-s flag-<?php echo $team->getFlagCode(); ?>"></i>&nbsp;<?php endif; ?><?php echo $team->getTitle() . ((string)$team->getCountry() !== '' ? ', ' . $team->getCountry() : ''); ?></td>
+<?php
+    foreach ($tableFields as $fieldKey) {
+        if ($fieldKey === StatsField::FIELD_PLACE) {
+            continue;
+        }
+        $class = $fieldKey === $scoreField ? ' class="gray-bg"' : '';
+        $method = 'get' . ucfirst($fieldKey);
+        if ($fieldKey === StatsField::FIELD_DIFFERENT) {
+?>
+                <td<?php echo $class; ?>><span class="<?php echo $scoreClass; ?>"><?php echo $row->{$method}(); ?></span></td>
+<?php
+        } else {
+?>
+                <td<?php echo $class; ?>><?php echo $row->{$method}(); ?></td>
+<?php
+        }
+    }
+?>
+            </tr>
+<?php
+        }
+?>
+        </tbody>
+    </table>
+
+    <div class="sp75"></div>
+</div>
+
+<style type="text/css">
+    .green-text {
+        color: #00aa32 !important;
+    }
+    .red-text {
+        color: #ff003c !important;
+    }
+    .gray-bg {
+        background: #e8e8e0 !important;
+    }
+</style>

@@ -1,0 +1,90 @@
+<?php
+
+    use Statistics\Entity\SportLeague;
+    use Statistics\Entity\SportType;
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+            <?php echo $this->tag->linkTo([['for' => 'sport_types_add'], 'Add new', 'class' => 'btn btn-default w-95']); ?>
+        </div>
+        <h1>Sport Types</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Leagues</th>
+                <th style="width:270px;">Articles category</th>
+                <th style="width:65px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    $total = count($paginator);
+    $current = 0;
+    foreach ($paginator as $type) {
+        /* @var $type SportType */
+        
+        $current++;
+
+        $leagues = [];
+        foreach ($type->getLeagues() as $league) {
+            /* @var $league SportLeague */
+            $leagues[] = $league->getTitle();
+        }
+        
+        $categories = [];
+        $articleCategoryLvl1 = $type->getArticleCategoryLvl1();
+        if (is_object($articleCategoryLvl1)) {
+            $categories[$articleCategoryLvl1->getId()] = $articleCategoryLvl1->getTitle();
+        }
+?>
+            <tr>
+                <td><?php echo $type->getTitle(); ?></td>
+                <td><?php echo count($leagues) > 0 ? implode(', ', $leagues) : '-'; ?></td>
+                <td><?php echo count($categories) > 0 ? implode(' / ', $categories) : '-'; ?></td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'sport_types_edit', 'id' => $type->getId()], 'Edit']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+        gridFilter.init('<?php echo $this->url->get(['for' => 'sport_types_list']); ?>');
+    });
+</script>

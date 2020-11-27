@@ -1,0 +1,196 @@
+<?php
+
+    use Forum\Entity\ForumReply;
+    use Forum\Entity\ForumTopic;
+    use Translations\Tool\Group;
+
+    /* @var $topic ForumTopic */
+
+    $this->translator->setGroup(Group::FORUM);
+
+    $authorised         = $this->auth->isAuthorised();
+    $authorisedMemberId = $this->auth->getAuthorisedUserId();
+
+    $topicId = $topic->getId();
+
+    $locked = $topic->isLocked();
+
+    $txtPlus  = $this->translator->trans('btn_rating_plus_title', 'Plus');
+    $txtMinus = $this->translator->trans('btn_rating_minus_title', 'Mīnus');
+    $txtLast  = $this->translator->trans('link_text_load_last_comments', 'Jaunākie');
+    $txtFirst = $this->translator->trans('link_text_load_first_comments', 'Vecākie');
+    $txtRated = $this->translator->trans('link_text_load_rated_comments', 'Labākie');
+    $txtAdd   = $this->translator->trans('link_text_add_comment', 'Pievienot');
+    $txtReport = $this->translator->trans('link_text_report_comment', 'Ziņot');
+    $txtReply = $this->translator->trans('link_text_reply_comment', 'Atbildēt');
+    $txtReplyInfoTextMask = $this->translator->trans('comment_reply_info_text_mask', 'Atbilde uz %skomentāru%s no %s');
+    $txtReplyCommentBlocked = $this->translator->trans('comment_replied_is_blocked', 'Bloķēts komentārs!');
+
+    $e = new Phalcon\Escaper();
+
+?>
+
+                    <div id="repliesBlock">
+
+                        <div class="row comment-header">
+                            <div class="col-md-12 col-sm-12 col-xs-12 title">
+                                <h2><?php echo $this->translator->trans('replies_list_block_title', 'Komentāri'); ?></h2>
+<?php if ($locked) : ?>
+                                <span class="dd"><br><?php echo $this->translator->trans('replies_info_text_when_topic_locked', 'Tēma ir aizvērta un vairs nav iespējams to komentēt.'); ?></span>
+<?php else : ?>
+<?php if (!$this->auth->isAuthorised()) : ?>
+                                <span class="dd"><?php echo $this->translator->trans('replies_list_block_unathorised_info_text', 'Tikai reģistrētie lietotāji var atstāt komentārus'); ?></span>
+                                <span class="sign"><a href="javascript:;" data-toggle="modal" data-target="#Login" title="<?php echo $this->translator->trans('login_popup_btn_login', 'Ienākt', Group::MEMBERS); ?>"><?php echo $this->translator->trans('login_popup_btn_login', 'Ienākt', Group::MEMBERS); ?></a><a href="javascript:;" data-toggle="modal" data-target="#Register" title="<?php echo $this->translator->trans('register_popup_btn_register', 'Reģistrēties', Group::MEMBERS); ?>"><?php echo $this->translator->trans('register_popup_btn_register', 'Reģistrēties', Group::MEMBERS); ?></a></span>
+<?php endif; ?>
+<?php endif; ?>
+                            </div>
+<?php
+    if (count($replies['paginator']) > 0) {
+?>
+                            <div class="col-md-12 col-sm-12 col-xs-12 filter" id="repliesFilterBlock">
+                                <a<?php echo ($replies['ordering'] == 'ASC' ? ' class="active"' : ''); ?> href="<?php echo $fullUrl .'/asc'; ?>" title="<?php echo $txtFirst; ?>"><?php echo $txtFirst; ?></a>
+                                <a<?php echo ($replies['ordering'] == 'DESC' ? ' class="active"' : ''); ?> href="<?php echo $fullUrl . '/desc'; ?>" title="<?php echo $txtLast; ?>"><?php echo $txtLast; ?></a>
+                                <a<?php echo ($replies['ordering'] == 'RATED' ? ' class="active"' : ''); ?> href="<?php echo $fullUrl . '/rated'; ?>" title="<?php echo $txtRated; ?>"><?php echo $txtRated; ?></a>
+                            </div>
+<?php
+    }
+?>
+                        </div>
+
+                        <div class="row comment-header" id="repliesListBlock">
+<?php
+    if (count($replies['paginator']) > 0) {
+
+        $badWords = (array)$this->config->blacklisted_words;
+        $replacementWords = '***';
+
+        foreach ($replies['paginator'] as $reply) {
+            /* @var $reply ForumReply */
+
+            $member = $reply->getMember();
+
+            $memberName = is_object($member) ? ucfirst((string)$member) : 'Unknown';
+            $memberLetter = substr($memberName, 0, 1);
+
+            $commentId = $reply->getId();
+
+            $allreadyRated = true;
+            if ($authorised) {
+                if (is_object($member) && $member->getId() === $authorisedMemberId) {
+                    $allreadyRated = true;
+                } else {
+                    $allreadyRated = $repliesRateRepo->allreadyRated(
+                        $reply->getId(), $authorisedMemberId
+                    );
+                }
+            }
+
+            $replyOnComment = $reply->getReplyOnComment();
+            /* @var $replyOnComment ForumReply */
+
+            $urlSaveComment = $this->url->get(['for' => 'forum_topic_reply_save', 'id' => $topicId]);
+
+?>
+                            <div class="row single-comment">
+                                <div class="col-md-9 col-sm-9 col-xs-12 user">
+                                    <span class="avatar random2"><?php echo $memberLetter; ?></span>
+                                    <span class="date"><?php echo $reply->getFormattedDate(); ?></span>
+                                    <span class="username">
+                                        <?php echo $memberName; ?><span class="user-status"><i class="fa fa-certificate"></i><i class="fa fa-certificate"></i><i class="fa fa-certificate"></i><i class="fa fa-certificate"></i><i class="fa fa-certificate"></i></span>
+                                    </span>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-12 rate" id="comment<?php echo $commentId; ?>RatingBlock">
+                                    <span class="rating">
+                                        <?php echo $reply->getFormattedRating(); ?>
+                                    </span><?php if (!$locked) : ?><span class="buttons"><a href="javascript:;" title="<?php echo $txtPlus; ?>" class="rate plus" onclick="rating.saveCommentRate(<?php echo $commentId; ?>, '<?php echo $this->url->get(['for' => 'forum_topic_reply_rate', 'type' => 'plus', 'id' => $commentId]); ?>');">
+                                        <i class="fa fa-plus"></i>
+                                    </a><a href="javascript:;" title="<?php echo $txtMinus; ?>" class="rate minus" onclick="rating.saveCommentRate(<?php echo $commentId; ?>, '<?php echo $this->url->get(['for' => 'forum_topic_reply_rate', 'type' => 'minus', 'id' => $commentId]); ?>');">
+                                        <i class="fa fa-minus"></i>
+                                    </a></span><?php endif; ?>
+                                </div>
+                                <div class="col-md-12 col-sm-12 col-xs-12 comment">
+<?php
+            if (is_object($replyOnComment)) {
+                $replyOnCommentMember = $replyOnComment->getMember();
+                $replyOnCommentMemberName = is_object($replyOnCommentMember) ? ucfirst((string)$replyOnCommentMember) : 'Unknown';
+                $replyInfoText = sprintf($txtReplyInfoTextMask, '<a href="javascript:;" onclick="forum.showHideReply('.$commentId.');">', '</a>', '<span class="username">'.$replyOnCommentMemberName.'</span>');
+?>
+                                    <span class="reply-on"><?php echo $replyInfoText; ?></span>
+                                    <p id="comm<?php echo $commentId; ?>reply" class="commented hide"><?php echo ($replyOnComment->isBlocked() ? $txtReplyCommentBlocked : str_ireplace($badWords, $replacementWords, strip_tags($replyOnComment->getContent(), '<br>'))); ?></p>
+<?php
+            }
+?>
+                                    <p><?php echo str_ireplace($badWords, $replacementWords, $reply->getContent()); ?></p>
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6 answer">
+<?php
+            if (!$locked && $authorised) {
+?>
+                                    <a href="javascript:;" onclick="forum.loadReplyForm(<?php echo $commentId; ?>, '<?php echo $urlSaveComment; ?>');" title="<?php echo $txtReply; ?>"><?php echo $txtReply; ?></a>
+<?php
+            }
+?>
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6 report" id="comment<?php echo $commentId; ?>ReportBlock">
+                                    <a href="javascript:;" onclick="forum.reportTopicReply(<?php echo $commentId; ?>, '<?php echo $this->url->get(['for' => 'forum_topic_reply_report', 'id' => $commentId]); ?>');" title="<?php echo $txtReport; ?>"><?php echo $txtReport; ?></a>
+                                </div>
+<?php
+            if (!$locked && $authorised) {
+?>
+                                <div class="hided" id="comment<?php echo $commentId; ?>ReplyBlock" style="display:none;">
+                                    <div class="col-md-9 col-sm-9 col-xs-12 textarea">
+                                        <textarea></textarea>
+                                    </div>
+                                    <div class="col-md-3 col-sm-3 col-xs-12 submit">
+                                        <a href="javascript:;" onclick="forum.saveReply(<?php echo $commentId; ?>, '<?php echo $urlSaveComment; ?>');" class="publish" title="<?php echo $txtAdd; ?>"><?php echo $txtAdd; ?></a>
+                                    </div>
+                                </div>
+<?php
+            }
+?>
+                            </div>
+<?php
+        }
+    } else {
+        if (!$locked) {
+?>
+                            <div class="col-md-12 col-sm-12 col-xs-12 title">
+                                <span class="dd"><?php echo $this->translator->trans('replies_list_block_no_comments_info_text', 'Pašlaik vēl nav neviens komentārs pievienots. Tu vari pirmais izteikt savu viedokli ;)'); ?></span>
+                            </div>
+<?php
+        }
+    }
+?>
+                        </div>
+
+<?php
+    if (count($replies['paginator']) > 0) {
+?>
+                        <div class="row comment-header" id="repliesPaginatorBlock">
+<?php
+    $pagerUrl = $fullUrl . '/' . strtolower($replies['ordering']);
+    echo $this->gridPager->links($pagerUrl, $replies['paginator'], $replies['currentPage'], $replies['perPage'], 7, 'partials/paginationForumReplies');
+?>
+                        </div>
+<?php
+    }
+?>
+
+<?php if (!$locked && $this->auth->isAuthorised()) : ?>
+                        <div class="row comment-header">
+                            <div class="col-md-12 col-sm-12 col-xs-12 title">
+                                <h2><?php echo $this->translator->trans('reply_add_block_title', 'Komentēt'); ?></h2>
+                                <span class="dd smaller"><?php echo $this->translator->trans('reply_add_info_text', 'Lūdzu atceraties, ka visas diskusijas mājas lapā tiek moderētas. Jūsu komentāri var būt dzēsti gadījumā, ja saturēs necenzēto leksiku, aizskars sportistu un komandu, kā arī citu mājas lapu lietotāju un mājas lapas administrācijas cieņu, rasisma un/vai nacisma ideoloģiju izpausmes, kā arī spamu. Ja Jūs pamanījāt komentāru, kas neatbilst AllSports.lv kopienas noteikumiem, lūdzam ziņot par to moderatoriem izmantojot saiti "Sūdzēties".'); ?></span>
+                            </div>
+                            <div class="col-md-9 col-sm-9 col-xs-12 textarea">
+                                <textarea id="txtComment"></textarea>
+                            </div>
+                            <div class="col-md-3 col-sm-3 col-xs-12 submit">
+                                <a href="javascript:;" onclick="forum.addTopicReply('<?php echo $this->url->get(['for' => 'forum_topic_reply_save', 'id' => $topic->getId()]); ?>');" title="<?php echo $this->translator->trans('reply_add_button', 'Pievienot'); ?>" class="publish"><?php echo $this->translator->trans('reply_add_button', 'Pievienot'); ?></a>
+                            </div>
+                        </div>
+<?php endif; ?>
+
+                    </div>
+
+<?php $this->translator->unsetGroup(); ?>

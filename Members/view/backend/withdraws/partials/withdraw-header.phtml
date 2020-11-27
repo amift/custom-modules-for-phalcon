@@ -1,0 +1,15 @@
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+<?php if (isset($form) && !$withdraw->isCompleted()) : ?>
+            <a href="javascript:;" class="btn btn-primary w-100" id="btnSave" tabindex="100">Save</a>
+<?php endif; ?>
+            <a href="<?php echo $this->url->get(['for' => 'withdraws_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>Withdraw information</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>

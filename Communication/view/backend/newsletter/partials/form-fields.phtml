@@ -1,0 +1,544 @@
+<?php
+
+    use Common\Tool\PeriodTool;
+    use Communication\Entity\Newsletter;
+
+    /* @var $newsletter Newsletter */
+
+    $criterias = $newsletter->getReceiverCriterias();
+    $critMembers = isset($criterias['members']) ? $criterias['members'] : [];
+    $createdOptions = PeriodTool::options();
+
+?>
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method' => 'post',
+            'name'   => 'frmNewsletter',
+            'id'     => 'frmNewsletter'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Main info</div>
+            </div>
+            <div class="col-lg-9">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <?php echo $form->renderWithLabel('title'); ?>
+                    </div>
+                    <div class="col-lg-3">
+                        <?php echo $form->renderWithLabel('type'); ?>
+                    </div>
+                    <div class="col-lg-3">
+                        <?php echo $form->renderWithLabel('state'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Sending info</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('fromName'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('fromEmail'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('toSendAt'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Receivers info</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="receiverCriterias[type]">Type</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[type]",
+                                    [ 'members' => 'Members' ],
+                                    'value' => isset($criterias['type']) ? $criterias['type'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => false,
+                                    'id' => 'receiverType'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row receiverType_members" style="display:none;">
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][confirmed]">Confirmed</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][confirmed]",
+                                    [ 1 => 'Yes', 0 => 'No' ],
+                                    'value' => isset($critMembers['confirmed']) ? $critMembers['confirmed'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => 'All'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][state]">Status</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][state]",
+                                    \Members\Tool\State::getLabels(),
+                                    'value' => isset($critMembers['state']) ? $critMembers['state'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => 'All'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][hasArticles]">Has articles</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][hasArticles]",
+                                    [ 1 => 'Yes', 0 => 'No' ],
+                                    'value' => isset($critMembers['hasArticles']) ? $critMembers['hasArticles'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => 'All'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][hasComments]">Has comments</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][hasComments]",
+                                    [ 1 => 'Yes', 0 => 'No' ],
+                                    'value' => isset($critMembers['hasComments']) ? $critMembers['hasComments'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => 'All'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][hasWithdraws]">Has withdraws</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][hasWithdraws]",
+                                    [ 1 => 'Yes', 0 => 'No' ],
+                                    'value' => isset($critMembers['hasWithdraws']) ? $critMembers['hasWithdraws'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => 'All'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][hasActualPoints]">Has Act. Points</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][hasActualPoints]",
+                                    [ 1 => 'Yes', 0 => 'No' ],
+                                    'value' => isset($critMembers['hasActualPoints']) ? $critMembers['hasActualPoints'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => 'All'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="display:none;">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][hasForumAct]">Has forum act.</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][hasForumAct]",
+                                    [ 1 => 'Yes', 0 => 'No' ],
+                                    'value' => isset($critMembers['hasForumAct']) ? $critMembers['hasForumAct'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => 'All'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row receiverType_members" style="display:none;">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][lastAuthorization]">Last authorization</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][lastAuthorization]",
+                                    $createdOptions,
+                                    'value' => isset($critMembers['lastAuthorization']) ? $critMembers['lastAuthorization'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => '-'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][lastArticleCreated]">Last article created</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][lastArticleCreated]",
+                                    $createdOptions,
+                                    'value' => isset($critMembers['lastArticleCreated']) ? $critMembers['lastArticleCreated'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => '-'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label for="receiverCriterias[members][lastCommentCreated]">Last comment created</label>
+                            <div class="sel_w100p sz-38 n">
+                                <?php echo $this->tag->selectStatic([
+                                    "receiverCriterias[members][lastCommentCreated]",
+                                    $createdOptions,
+                                    'value' => isset($critMembers['lastCommentCreated']) ? $critMembers['lastCommentCreated'] : '',
+                                    'class' => 'selectpicker',
+                                    'useEmpty' => true,
+                                    'emptyText' => '-'
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Message info</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <?php echo $form->renderWithLabel('subject'); ?>
+                    </div>
+                </div>
+                <div class="sp7"></div>
+                <div class="row" id="fieldType_1" style="display:none;">
+                    <div class="col-lg-12">
+                        <?php echo $form->renderWithLabel('body'); ?>
+                    </div>
+                </div>
+                <div id="fieldType_2" style="display:none;">
+                    <div class="row">
+                        <div class="col-lg-12" id="articles_holder">
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="sp7"></div>
+                            <div><a href="#" id="btnAddArticle"> + Add article</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php echo $form->closeTag(); ?>
+
+<script type="text/javascript">
+
+    var ARTICLES_SAVED = <?php echo json_encode($newsletter->getFormattedArticlesForForm()) ?>;
+    var TXT_DEF_WEEKLY_TITLE = '<?php echo sprintf('#%s nedēļa', (new \DateTime('now'))->format("W")); ?>';
+    var TXT_DEF_WEEKLY_SUBJECT = 'Aizvadītās nedēļas|{num}. karstākās ziņas';
+    var IS_NEW = <?php if ($new) : ?>true<?php else : ?>false<?php endif; ?>;
+
+    function setUpNeededMessageInfoFields()
+    {
+        if (parseInt($('#type_elem').val()) === 2) {
+            if (IS_NEW) {
+                if ($('#title_elem').val() === '') {
+                    $('#title_elem').val(TXT_DEF_WEEKLY_TITLE);
+                }
+                if ($('#subject_elem').val() === '') {
+                    $('#subject_elem').val(TXT_DEF_WEEKLY_SUBJECT);
+                }
+            }
+            $('#fieldType_1').hide();
+            $('#fieldType_2').show();
+        } else {
+            if (IS_NEW) {
+                if ($('#title_elem').val() === TXT_DEF_WEEKLY_TITLE) {
+                    $('#title_elem').val('');
+                }
+                if ($('#subject_elem').val() === TXT_DEF_WEEKLY_SUBJECT) {
+                    $('#subject_elem').val('');
+                }
+            }
+            $('#fieldType_2').hide();
+            $('#fieldType_1').show();
+        }
+    }
+
+    function setUpReceiversFields()
+    {
+        if ($('#receiverType').val() === 'members') {
+            $('.receiverType_members').show();
+        } else {
+            $('.receiverType_members').hide();
+        }
+    }
+
+    $(function() {
+        "use strict";
+
+        var newsletterArticleSuggest = new Bloodhound({
+            datumTokenizer : function (datum) {
+                return Bloodhound.tokenizers.whitespace(datum.value);
+            },
+            queryTokenizer : Bloodhound.tokenizers.whitespace,
+            remote : {
+                url: '/newsletters/search-for-articles?searchTerm=%QUERY%',
+                wildcard : '%QUERY%',
+                cache : false,
+                filter : function(response) {
+                    return $.map(response.results, function(row) {
+                        return {
+                            value : row.title,
+                            id : row.id,
+                            category : row.category,
+                            date : row.date,
+                            label : row.title + ' | ' + row.category + ' | Date : ' + row.date
+                        };
+                    });
+                }
+            }
+        });
+        newsletterArticleSuggest.initialize();
+
+        var $holder = $('#articles_holder');
+        var num = 1;
+
+        $('#btnAddArticle').click(function(e){
+            e.preventDefault();
+            createRow('', '', '', '');
+            $('html, body').animate({scrollTop: $(document).height()}, 'slow');
+        });
+
+        var createRow = function(id, article_id, title, ordering) {
+
+            var template = $('#rowTemplate').html();
+
+            var $row = $(template.split('__num__').join(num.toString()));
+
+            $('.id_inp', $row).val(id);
+            $('.article_id_inp', $row).val(article_id);
+            $('.title_inp', $row).val(title);
+            $('.ordering_inp', $row).val(ordering !== '' ? ordering : num.toString());
+
+            if (parseInt(id) > 0) {
+                $('.key_inp', $row).prop('readonly', true);
+            }
+
+            $('.btnDeleteArticle', $row).click(function(e) {
+                e.preventDefault();
+                var $block = $(this);
+                bootbox.confirm('Are You sure to delete article', function(result) {
+                    if (true === result) {
+                        $block.parents('.rowValue:first').remove();
+                    }
+                });
+            });
+
+            $('.title_inp', $row).typeahead(
+                { hint : true, highlight : true, minLength : 1 },
+                { displayKey : 'label', limit: 10, source : newsletterArticleSuggest.ttAdapter() }
+            ).bind('typeahead:selected', function(obj, datum, name) {
+                $('.article_id_inp', $row).val(datum.id);
+            });
+
+            $holder.append($row);
+
+            num++;
+        };
+
+        if (ARTICLES_SAVED.length > 0) {
+            for (var i = 0; i < ARTICLES_SAVED.length; i++) {
+                var val = ARTICLES_SAVED[i];
+                createRow(val.id, val.article_id, val.title, val.ordering);
+            }
+        }
+
+        setUpNeededMessageInfoFields();
+
+        // On title change create url if it is empty
+        $('#type_elem').change(function(){
+            setUpNeededMessageInfoFields();
+        });
+
+        setUpReceiversFields();
+
+        //
+        $('#receiverType').change(function(){
+            setUpReceiversFields();
+        });
+<?php if ($newsletter->isEditable()) : ?>
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+
+            // options part
+            var addError = function($inp) {
+                $inp.parents('.form-group:first').addClass('has-error');
+            };
+            var removeError = function($inp) {
+                $inp.parents('.form-group:first').removeClass('has-error');
+            };
+
+            var hasError = false;
+            var i = 0;
+
+            $holder.find('.rowValue').each(function() {
+                var $row = $(this);
+                var $idInp = $row.find('.id_inp');
+                var $articleIdInp = $row.find('.article_id_inp');
+                var $titleInp = $row.find('.title_inp');
+                var $orderingInp = $row.find('.ordering_inp');
+
+                if ($articleIdInp.val().length === 0) {
+                    addError($articleIdInp);
+                    hasError = true;
+                } else {
+                    removeError($articleIdInp);
+                }
+
+                if ($articleIdInp.val().length === 0 || parseInt($articleIdInp.val()) < 1) {
+                    addError($articleIdInp);
+                    hasError = true;
+                } else {
+                    removeError($articleIdInp);
+                }
+
+                i++;
+            });
+
+            if (parseInt($('#type_elem').val()) === 2) {
+                if (i < 2) {
+                    hasError = true;
+                    bootbox.alert('At least 2 articles need to set up for weekly newsletter');
+                }
+            }
+
+            if (hasError === false) { 
+                $('#frmNewsletter').submit();
+            }
+        });
+<?php endif; ?>
+
+        // Handle preview button
+        $('#btnPreview').click(function(e){
+            e.preventDefault();
+            var url = $(this).attr('href');
+            var articleIds = '';
+            $holder.find('.rowValue').each(function() {
+                var $row = $(this);
+                var $articleIdInp = $row.find('.article_id_inp');
+                if (articleIds !== '') {
+                    articleIds += ',' + $articleIdInp.val();
+                } else {
+                    articleIds += $articleIdInp.val();
+                }
+            });
+            var input = {
+                type : ($('#type_elem').length ? $('#type_elem').val() : '1'),
+                subject : ($('#subject_elem').length ? $('#subject_elem').val() : ''),
+                body : ($('#body_elem').length ? $('#body_elem').val() : ''),
+                articleIds : articleIds
+            };
+            var request = $.ajax({ type : 'POST', url : url, data : input });
+            request.done(function(r){
+                var data = $.parseJSON(r);
+                if (parseInt(data.success) === 1) {
+                    $('#blockPreviewPopupData').html(data.html);
+                    $('#Preview').modal('show');
+                }
+            });
+        });
+    });
+</script>
+
+<script type="text/html" id="rowTemplate">
+                            <div class="row rowValue">
+                                <div class="col-lg-1">
+                                    <div class="form-group">
+                                        <a href="#" class="btnDeleteArticle">Delete</a>
+                                        <input type="hidden" name="articles[__num__][id]" class="id_inp key_inp" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Article ID</label>
+                                        <input type="text" name="articles[__num__][article_id]" value="" readonly="readonly" class="form-control article_id_inp" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-7">
+                                    <div class="form-group">
+                                        <label class="control-label">Article Title</label>
+                                        <input type="text" name="articles[__num__][title]" value="" class="form-control title_inp">
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Ordering</label>
+                                        <input type="text" name="articles[__num__][ordering]" value="" class="form-control ordering_inp">
+                                    </div>
+                                </div>
+                            </div>
+</script>

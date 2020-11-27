@@ -1,0 +1,106 @@
+<?php
+
+    use Common\Tool\Enable;
+    use Polls\Tool\State;
+
+?>
+
+    <div class="sp15"></div>
+    <div class="table-filters">
+        <div>
+            <div class="filter-group">
+                <label for="state">Status</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "state",
+                        State::getLabels(),
+                        'value' => $filters['state'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '150px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <label for="startpage">Startpage</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "startpage",
+                        Enable::getShortLabels(),
+                        'value' => $filters['startpage'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '100px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <div class="form-group w-140">
+                    <label for="publicationDateFrom">Date From</label>
+                    <div class="input-group date datepicker_holder publicationDateFrom_holder" id="publicationDateFrom" data-date-format="DD/MM/YYYY">
+                        <input type="text" class="form-control" name="publicationDateFrom" value="<?php echo $filters['publicationDateFrom']; ?>" >
+                        <span class="input-group-addon datepicker_icon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="form-group w-140">
+                    <label for="publicationDateTo">To</label>
+                    <div class="input-group date datepicker_holder publicationDateTo_holder" id="publicationDateTo" data-date-format="DD/MM/YYYY">
+                        <input type="text" class="form-control" name="publicationDateTo" value="<?php echo $filters['publicationDateTo']; ?>" >
+                        <span class="input-group-addon datepicker_icon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="c"></div>
+            <div class="filter-group">
+                <label for="categoryLvl1">Category 1</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "categoryLvl1",
+                        $categories['categoryLvl1'],
+                        'value' => $filters['categoryLvl1'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '200px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <label for="categoryLvl2">Category 2</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "categoryLvl2",
+                        $categories['categoryLvl2'],
+                        'value' => $filters['categoryLvl2'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '240px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <label for="categoryLvl3">Category 3</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "categoryLvl3",
+                        $categories['categoryLvl3'],
+                        'value' => $filters['categoryLvl3'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '240px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="c"></div>
+            <div class="afterfilter_options">
+                <div class="filter_clear_line">
+                    <a href="javascript:;" class="filter_btn" id="btnFilter">Filter</a>
+                    <a href="javascript:;" class="clear_filter_btn" id="btnClearFilter">Clear filter</a>
+                </div>
+            </div>
+        </div>
+    </div>

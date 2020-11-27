@@ -1,0 +1,247 @@
+<?php
+
+    use Members\Entity\Member;
+    use Members\Entity\TotalPoints;
+    use Members\Entity\Withdraws;
+    use Members\Tool\Confirmed;
+
+    /* @var $withdraw Withdraws */
+
+    $member = $withdraw->getMember();
+    /* @var $member Member */
+
+    $totals = $member->getTotalPointsData();
+    /* @var $totals TotalPoints */
+
+    $availablePts = is_object($totals) ? $totals->getTotalActual() : 0;
+
+    $isDanger = $withdraw->isPending() && $availablePts < $withdraw->getPts() ? true : false;
+
+    $date = $withdraw->getCreatedAt();
+
+?>
+
+<?php echo $this->partial('withdraws/partials/withdraw-header'); ?>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ($isDanger) :  ?>
+    <div class="alert1_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert1_cont"><span aria-hidden="true">&times;</span></button>
+            <div>Seems actual member points is less than requested points to withdraw.</div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('withdraws/partials/withdraw-tabs'); ?>
+
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="overview_tab">
+
+            <table class="twocol_r400"><tbody><tr>
+                <td class="leftcol pb0">
+
+                    <div class="twocol_border p29 col1pl0">
+                        <div class="col1" style="min-height:500px;">
+
+                            <div class="sp27"></div>
+                            <h2>Withdraw Request Info</h2>
+                            <div class="sp21"></div>
+                            <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                                <tr>
+                                    <td>ID</td>
+                                    <td><b><?php echo $withdraw->getId(); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Date</td>
+                                    <td><b><?php echo is_object($date) ? $date->format('d/m/Y H:i:s') : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Points</td>
+                                    <td><b><?php echo $withdraw->getPts(); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Amount</td>
+                                    <td><b><?php echo sprintf('%s %s', $withdraw->getAmount(), $withdraw->getCurrency()); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Type</td>
+                                    <td><b><?php echo $withdraw->getTypeLabel(); ?></b></td>
+                                </tr>
+<?php if ($withdraw->isTypePayPal()) : ?>
+                                <tr>
+                                    <td>PayPal email</td>
+                                    <td><b><?php echo $withdraw->getPaypalEmail() !== null ? $withdraw->getPaypalEmail() : '-'; ?></b></td>
+                                </tr>
+<?php endif; ?>
+<?php if ($withdraw->isTypeBankTransfer()) : ?>
+                                <tr>
+                                    <td>Bank Name</td>
+                                    <td><b><?php echo $withdraw->getBankNameLabel() !== null ? $withdraw->getBankNameLabel() : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Bank Account</td>
+                                    <td><b><?php echo $withdraw->getBankAccount() !== null ? $withdraw->getBankAccount() : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Receiver Name</td>
+                                    <td><b><?php echo $withdraw->getReceiverName() !== null ? $withdraw->getReceiverName() : '-'; ?></b></td>
+                                </tr>
+<?php endif; ?>
+                            </tbody></table>
+                            <div class="sp24"></div>
+
+<?php if ($withdraw->isRejected()) : ?>
+                            <div class="sp27"></div>
+                            <h2>Cancellation Info</h2>
+                            <div class="sp21"></div>
+                            <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                                <tr>
+                                    <td>Reason</td>
+                                    <td><b><?php echo $withdraw->getReason() !== null ? $withdraw->getReason() : '-'; ?></b></td>
+                                </tr>
+                            </tbody></table>
+                            <div class="sp24"></div>
+<?php endif; ?>
+
+<?php if ($withdraw->isCompleted()) : ?>
+                            <div class="sp27"></div>
+                            <h2>Transaction Info</h2>
+                            <div class="sp21"></div>
+                            <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                                <tr>
+                                    <td>Date</td>
+                                    <td><b><?php echo is_object($withdraw->getTransactionDate()) ? $withdraw->getTransactionDate()->format('d/m/Y H:i:s') : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Reference No</td>
+                                    <td><b><?php echo $withdraw->getTransactionNumber() !== null ? $withdraw->getTransactionNumber() : '-'; ?></b></td>
+                                </tr>
+                            </tbody></table>
+                            <div class="sp24"></div>
+<?php endif; ?>
+
+                        </div>
+                        <div class="col2">
+
+                            <div class="sp27"></div>
+                            <h2>Member General Info</h2>
+                            <div class="sp21"></div>
+                            <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                                <tr>
+                                    <td>ID</td>
+                                    <td><b><?php echo $member->getId(); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Username</td>
+                                    <td><b><?php echo $member->getUsername(); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>E-mail</td>
+                                    <td><b><a href="mailto:<?php echo $member->getEmail(); ?>"><?php echo $member->getEmail(); ?></a></b></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><hr></td>
+                                </tr>
+                                <tr>
+                                    <td>Created</td>
+                                    <td><b><?php echo is_object($member->getCreatedAt()) ? $member->getCreatedAt()->format('d/m/Y H:i') : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Created from</td>
+                                    <td><b><?php echo $member->getCreatedFromIp() !== ''  ? $member->getCreatedFromIp() : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Last login at</td>
+                                    <td><b><?php echo is_object($member->getLoginLastAt()) ? $member->getLoginLastAt()->format('d/m/Y H:i') : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Last login from</td>
+                                    <td><b><?php echo $member->getLoginLastIp() !== '' ? $member->getLoginLastIp() : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><hr></td>
+                                </tr>
+                                <tr>
+                                    <td>Earned</td>
+                                    <td><b><?php echo is_object($totals) ? $totals->getTotalEarned() : '0'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Withdrawed</td>
+                                    <td><b><?php echo is_object($totals) ? $totals->getTotalWithdrawed() : '0'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Actual</td>
+                                    <td><b><?php echo is_object($totals) ? $totals->getTotalActual() : '0'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><hr></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><b><?php 
+                                        $url = $this->url->get(['for' => 'members_view', 'id' => $member->getId()]);
+                                        echo sprintf('<a href="%s" target="_blank">%s</a>', $url, 'View member details');
+                                    ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><b><?php 
+                                        $url = $this->url->get(['for' => 'articles_list']) . '?member=' . $member->getId();
+                                        echo sprintf('<a href="%s" target="_blank">%s</a>', $url, 'View member articles list');
+                                    ?></b></td>
+                                </tr>
+                            </tbody></table>
+                            <div class="sp24"></div>
+
+                        </div>
+                    </div>
+
+                </td>
+                <td class="rightcol gray">
+
+                    <div class="status-title">Withdraw Status</div>
+                    <div class="sp12"></div>
+                    <?php echo $this->withdrawStatus->big($withdraw); ?>
+                    <?php echo $this->dateChangedAt->format($withdraw->getUpdatedAt()); ?>
+
+                    <div class="sp27"></div>
+                    <hr>
+                    <div class="sp26"></div>
+
+                    <div class="status-title">Member Status</div>
+                    <div class="sp12"></div>
+                    <?php echo $this->memberStatus->big($member); ?>
+                    <?php echo $this->dateChangedAt->format($member->getStateChangedAt()); ?>
+
+                    <div class="sp27"></div>
+                    <hr>
+                    <div class="sp26"></div>
+
+                    <div class="status-title">Member Confirmed</div>
+                    <div class="sp12"></div>
+                    <?php echo $this->enableStatus->big($member, Confirmed::getLabels(), Confirmed::getStyles()); ?>
+                    <?php echo $this->dateChangedAt->format($member->getConfirmedAt()); ?>
+
+                </td>
+            </tr></tbody></table>
+
+        </div>
+    </div>
+
+    <div class="sp75"></div>
+</div>

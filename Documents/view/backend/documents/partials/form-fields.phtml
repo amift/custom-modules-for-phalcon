@@ -1,0 +1,79 @@
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method' => 'post',
+            'name'   => 'frmDocument',
+            'id'     => 'frmDocument'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+        <div class="row">
+            <div class="col-xs-4">
+                <?php echo $form->renderWithLabel('key'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('title'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('slug'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('enabled'); ?>
+                <div class="sp7"></div>
+                <?php echo $form->renderWithLabel('parent'); ?>
+            </div>
+            <div class="col-lg-8">
+                <?php echo $form->renderWithLabel('content'); ?>
+            </div>
+        </div>
+        <div class="sp7"></div>
+        <div class="row">
+            <div class="col-xs-4">
+                <?php echo $form->renderWithLabel('seoTitle'); ?>
+            </div>
+            <div class="col-lg-4">
+                <?php echo $form->renderWithLabel('seoKeywords'); ?>
+            </div>
+            <div class="col-lg-4">
+                <?php echo $form->renderWithLabel('seoDescription'); ?>
+            </div>
+        </div>
+
+    <?php echo $form->closeTag(); ?>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $('#frmDocument input').each(function() {
+                $(this).removeAttr('disabled');
+            });
+            $('#frmDocument select').each(function() {
+                $(this).removeAttr('disabled').selectpicker('refresh');
+            });
+            urlSegment.generate('slug_elem');
+            $("#frmDocument").submit();
+        });
+
+        // On title change create url if it is empty
+        $('#title_elem').bind('blur', function(){
+            urlSegment.generateWhenEmtpy('slug_elem', 'title_elem');
+        });
+
+    });
+</script>

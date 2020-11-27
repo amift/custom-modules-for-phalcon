@@ -1,0 +1,54 @@
+<?php
+
+$tabs = [
+    'general' => [
+        'title' => 'General Info',
+        'url' => $this->url->get(['for' => 'server_info_general'])
+    ],
+    'php' => [
+        'title' => 'PHP Info',
+        'url' => $this->url->get(['for' => 'server_info_php'])
+    ],
+];
+
+?>
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <h1>Server Information</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <div class="sp10"></div>
+    <ul class="nav nav-tabs" role="tablist">
+<?php
+    foreach ($tabs as $key => $data) :
+        $class = $tab === $key ? ' class="active"' : '';
+        $url = $tab === $key ? 'javascript:;' : $data['url'];
+?>
+        <li<?php echo $class; ?>><?php echo sprintf('<a href="%s">%s</a>', $url, $data['title']); ?></li>
+<?php endforeach; ?>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="general_tab">
+
+            <div class="sp27"></div>
+            <div class="row">
+                <div class="col-lg-12 phpinfo">
+                    <?php echo $phpinfo; ?>
+                </div>
+            </div>
+            <div class="sp24"></div>
+
+        </div>
+    </div>
+
+    <div class="sp75"></div>
+</div>

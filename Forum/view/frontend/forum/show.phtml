@@ -1,0 +1,86 @@
+<?php
+
+    use Forum\Entity\ForumTopic;
+    use Translations\Tool\Group;
+
+    /* @var $topic ForumTopic */
+
+    $this->translator->setGroup(Group::FORUM);
+
+    $e = new Phalcon\Escaper();
+
+    $allowEdit = false;
+    if ($this->auth->isAuthorised() && $topic->hasMember() && $topic->isNew()) {
+        $member = $topic->getMember();
+        if (is_object($member) && $member->getId() === $this->auth->getAuthorisedUserId()) {
+            $allowEdit = true;
+        }
+    }
+
+    $breadcrumbCounts = count($breadcrumbUrls);
+
+?>
+
+            <div class="col-md-12 col-sm-12 col-xs-12 full-article">
+                <div class="container-fluid">
+
+                    <div class="row heading">
+                        <div class="col-md-7 col-sm-7 col-xs-7 dd">
+                            <?php if ($allowEdit) : ?><a href="<?php echo $this->url->get(['for' => 'forum_topic_edit', 'id' => $topic->getId()]); ?>" class="edit-btn"><i class="fa fa-pencil"></i><span class="title">Edit</span></a><?php endif; ?>
+<?php if ($breadcrumbCounts > 0) : ?>
+                            <span class="paths">
+<?php
+    $counter = 0;
+    foreach ($breadcrumbUrls as $breadcrumbUrl) {
+        $counter++;
+        ?><a href="<?php echo $breadcrumbUrl['url']; ?>"><?php echo $breadcrumbUrl['title']; ?></a><?php
+        if ($counter < $breadcrumbCounts) {
+            ?> / <?php
+        }
+    }
+?>
+                            </span>
+<?php endif; ?>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-xs-5 social">
+                            <a href="javascript:;" onclick="sharer.fb('<?php echo $fullUrl; ?>', '<?php echo $this->metaData->getLikeMetaTitle($topic->getTitle()); ?>', '', '<?php echo $this->metaData->getLikeMetaDescription($topic->getContent()); ?>');" title="Facebook" class="fb"><i class="fa fa-facebook"></i></a>
+                            <a href="javascript:;" onclick="sharer.tw('<?php echo $fullUrl; ?>', '<?php echo $this->metaData->getLikeMetaTitle($topic->getTitle()); ?>', '', '<?php echo $this->metaData->getLikeMetaDescription($topic->getContent()); ?>');" title="Twitter" class="tw"><i class="fa fa-twitter"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="row overall">
+                        <div class="col-md-12 title">
+                            <h1><?php echo $topic->getTitle(); ?></h1>
+                        </div>
+                    </div>
+                    <div class="row news-body">
+                        <div class="col-md-12">
+                            <?php echo $topic->getContent(); ?>
+                        </div>
+                    </div>
+
+                    <div class="row author">
+                        <div class="col-md-12 col-sm-12 col-xs-12 posted-by">
+                            <?php if ($topic->hasMember()) : ?><span class="col"><?php echo $this->translator->trans('forum_topic_added_by', 'Pievienoja:'); ?> <span class="added"><?php echo (string)$topic->getMember(); ?></span></span><?php endif; ?>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-8 rate" id="forumTopicRatingBlock">
+                            <span class="buttons"><a href="javascript:;" onclick="rating.saveForumTopicRate('<?php echo $this->url->get(['for' => 'forum_topic_save_rate', 'type' => 'plus', 'id' => $topic->getId()]); ?>');" title="<?php echo $this->translator->trans('btn_rating_plus_title', 'Plus'); ?>" class="rate plus">
+                                <i class="fa fa-plus"></i>
+                            </a><a href="javascript:;" onclick="rating.saveForumTopicRate('<?php echo $this->url->get(['for' => 'forum_topic_save_rate', 'type' => 'minus', 'id' => $topic->getId()]); ?>');" title="<?php echo $this->translator->trans('btn_rating_minus_title', 'Mīnus'); ?>" class="rate minus">
+                                <i class="fa fa-minus"></i>
+                            </a></span><span class="rating">
+                                <?php echo $this->translator->trans('lbl_news_rating', 'Reitings'); ?> <?php echo $topic->getFormattedRating(); ?>
+                            </span>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-4 social">
+                            <a href="javascript:;" onclick="sharer.fb('<?php echo $fullUrl; ?>', '<?php echo $this->metaData->getLikeMetaTitle($topic->getTitle()); ?>', '', '<?php echo $this->metaData->getLikeMetaDescription($topic->getContent()); ?>');" title="Facebook" class="fb"><i class="fa fa-facebook"></i></a>
+                            <a href="javascript:;" onclick="sharer.tw('<?php echo $fullUrl; ?>', '<?php echo $this->metaData->getLikeMetaTitle($topic->getTitle()); ?>', '', '<?php echo $this->metaData->getLikeMetaDescription($topic->getContent()); ?>');" title="Twitter" class="tw"><i class="fa fa-twitter"></i></a>
+                        </div>
+                    </div>
+
+<?php echo $this->partial('forum/partials/replies'); ?>
+
+                </div>
+            </div>
+
+<?php $this->translator->unsetGroup(); ?>

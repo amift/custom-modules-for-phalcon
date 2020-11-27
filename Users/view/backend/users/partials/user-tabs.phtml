@@ -1,0 +1,31 @@
+<?php
+
+use Users\Entity\User;
+
+/* @var $user User */
+
+$tabs = [
+    'general' => [
+        'title' => 'General info',
+        //'url' => $this->url->get(['for' => 'users_'. ($isEdit ? 'edit' : 'view'), 'id' => $user->getId()])
+        'url' => $this->url->get(['for' => 'users_edit', 'id' => $user->getId()])
+    ],
+    'password' => [
+        'title' => 'Password',
+        'url' => $this->url->get(['for' => 'users_password', 'id' => $user->getId()])
+    ]
+];
+
+?>
+
+    <div class="sp10"></div>
+    <ul class="nav nav-tabs">
+<?php
+    foreach ($tabs as $key => $data) :
+        $class = $tab === $key ? ' class="active"' : '';
+        $url = $tab === $key ? 'javascript:;' : $data['url'];
+?>
+        <li<?php echo $class; ?>><?php echo sprintf('<a href="%s">%s</a>', $url, $data['title']); ?></li>
+<?php endforeach; ?>
+    </ul>
+    <div class="c sp20"></div>

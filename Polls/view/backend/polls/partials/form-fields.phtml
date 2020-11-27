@@ -1,0 +1,302 @@
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method'  => 'post',
+            'name'    => 'frmPoll',
+            'id'      => 'frmPoll',
+            'enctype' => 'multipart/form-data'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Main info</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <?php echo $form->renderWithLabel('title'); ?>
+                    </div>
+                    <div class="col-lg-6">
+                        <?php echo $form->renderWithLabel('slug'); ?>
+                    </div>
+                </div>
+                <div class="sp7"></div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('publicationDate'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('state'); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <?php echo $form->renderWithLabel('startpage'); ?>
+                    </div>
+                </div>
+                <div class="sp7"></div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <?php echo $form->renderWithLabel('content'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Category</div>
+            </div>
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <?php echo $form->renderWithLabel('categoryLvl1'); ?>
+                    </div>
+                    <div class="col-xs-4">
+                        <?php echo $form->renderWithLabel('categoryLvl2'); ?>
+                    </div>
+                    <div class="col-xs-4">
+                        <?php echo $form->renderWithLabel('categoryLvl3'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sp40"></div>
+        <hr>
+        <div class="sp34"></div>
+
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="fs-3036">Options</div>
+                <div style="padding-top:5px;">
+                    <a href="#" id="btnAddOption"> + Add option</a>
+                </div>
+            </div>
+            <div class="col-xs-9" id="options_holder">
+            </div>
+        </div>
+
+    <?php echo $form->closeTag(); ?>
+
+
+
+<script type="text/javascript">
+
+    var OPTIONS_SAVED = <?php echo json_encode($poll->getFormattedOptionsForForm()) ?>;
+
+    $(function() {
+        "use strict";
+
+        var $holder = $('#options_holder');
+        var num = 1;
+
+        $('#btnAddOption').click(function(e){
+            e.preventDefault();
+            createRow('', '', '', '');
+            $('html, body').animate({scrollTop: $(document).height()}, 'slow');
+        });
+
+        var createRow = function(id, title, ordering, image) {
+
+            var template = $('#rowTemplate').html();
+
+            var $row = $(template.split('__num__').join(num.toString()));
+
+            $('.id_inp', $row).val(id);
+            $('.title_inp', $row).val(title);
+            $('.ordering_inp', $row).val(ordering !== '' ? ordering : num.toString());
+            if (image !== '' && image !== '/') {
+                $('.imagePublicPath_inp', $row).attr('src', image);
+                console.log($('.imagePublicPath_inp', $row));
+                $('.imagePublicPath_inp', $row).parent().parent().attr('style', '');
+            }
+
+            if (parseInt(id) > 0) {
+                $('.key_inp', $row).prop('readonly', true);
+            }
+
+            $('.btnDeleteOption', $row).click(function(e) {
+                e.preventDefault();
+                var $block = $(this);
+                bootbox.confirm('Are You sure to delete option', function(result) {
+                    if (true === result) {
+                        $block.parents('.rowValue:first').remove();
+                    }
+                });
+            });
+
+            $holder.append($row);
+
+            num++;
+        };
+
+        for (var i = 0; i < OPTIONS_SAVED.length; i++) {
+            var val = OPTIONS_SAVED[i];
+            createRow(val.id, val.title, val.ordering, val.imagePublicPath);
+        }
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $('#frmPoll input').each(function() {
+                $(this).removeAttr('disabled');
+            });
+            $('#frmPoll select').each(function() {
+                $(this).removeAttr('disabled').selectpicker('refresh');
+            });
+            urlSegment.generate('slug_elem');
+
+            // options part
+            var addError = function($inp) {
+                $inp.parents('.form-group:first').addClass('has-error');
+            };
+            var removeError = function($inp) {
+                $inp.parents('.form-group:first').removeClass('has-error');
+            };
+
+            var hasError = false;
+            var i = 0;
+
+            $holder.find('.rowValue').each(function() {
+                var $row = $(this);
+                var $idInp = $row.find('.id_inp');
+                var $titleInp = $row.find('.title_inp');
+                var $orderingInp = $row.find('.ordering_inp');
+                var $imageInp = $row.find('.image_inp');
+
+                if ($titleInp.val().length === 0) {
+                    addError($titleInp);
+                    hasError = true;
+                } else {
+                    removeError($titleInp);
+                }
+
+                if ($orderingInp.val().length === 0 || parseInt($orderingInp.val()) < 1) {
+                    addError($orderingInp);
+                    hasError = true;
+                } else {
+                    removeError($orderingInp);
+                }
+
+                i++;
+            });   
+
+            if (hasError === false) { 
+                $('#frmPoll').submit();
+            }
+        });
+
+        // On title change create url if it is empty
+        $('#title_elem').bind('blur', function(){
+            urlSegment.generateWhenEmtpy('slug_elem', 'title_elem');
+        });
+
+        // Disable cat2, cat3 fields when type empty
+        if ($("#categoryLvl1_elem").find(":selected").val() === '0') {
+            disableSelectField('#categoryLvl2_elem');
+        }
+
+        // Disable model fields when mark empty
+        if ($("#categoryLvl2_elem").find(":selected").val() === '0') {
+            disableSelectField('#categoryLvl3_elem');
+        }
+
+        // Reload cat2 on cat1 change
+        $("#categoryLvl1_elem").change(function() {
+            var cat1_id = $(this).find(":selected").val();
+            if (parseInt(cat1_id) > 0) {
+                var request = $.ajax({
+                    type: 'GET',
+                    url: '<?php echo $this->url->get(['for' => 'article_categories_ajax_load']); ?>' + cat1_id
+                });
+                request.done(function(data){
+                    var data = $.parseJSON(data);
+                    refillSelectFieldOptions('#categoryLvl2_elem', data.data);
+                    clearSelectFieldOptions('#categoryLvl3_elem');
+                });
+            } else {
+                clearSelectFieldOptions('#categoryLvl2_elem');
+                clearSelectFieldOptions('#categoryLvl3_elem');
+            }
+        });
+
+        // Reload cat3 on cat2 change
+        $("#categoryLvl2_elem").change(function() {
+            var cat2_id = $(this).find(":selected").val();
+            if (parseInt(cat2_id) > 0) {
+                var request = $.ajax({
+                    type: 'GET',
+                    url: '<?php echo $this->url->get(['for' => 'article_categories_ajax_load']); ?>' + cat2_id
+                });
+                request.done(function(data){
+                    var data = $.parseJSON(data);
+                    refillSelectFieldOptions('#categoryLvl3_elem', data.data);
+                });
+            } else {
+                clearSelectFieldOptions('#categoryLvl3_elem');
+            }
+        });
+
+    });
+
+</script>
+
+<script type="text/html" id="rowTemplate">
+                <div class="row rowValue">
+                    <div class="col-lg-1">
+                        <div class="form-group">
+                            <a href="#" class="btnDeleteOption">Delete</a>
+                            <input type="hidden" name="options[__num__][id]" class="id_inp key_inp" />
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="form-group">
+                            <label class="control-label">Title</label>
+                            <input type="text" name="options[__num__][title]" value="" class="form-control title_inp">
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label">Ordering</label>
+                            <input type="text" name="options[__num__][ordering]" value="" class="form-control ordering_inp">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="control-label">Image</label>
+                                    <input type="file" name="options[__num__][image]" value="" class="form-control image_inp">
+                                </div>
+                            </div>
+                            <div class="col-lg-6" style="display:none;">
+                                <div class="form-group">
+                                    <label class="control-label">Current Image</label>
+                                    <div class="sp7"></div>
+                                    <img src="" name="options[__num__][imagePublicPath]" class="imagePublicPath_inp" style="max-width:100px;max-height:100px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+</script>

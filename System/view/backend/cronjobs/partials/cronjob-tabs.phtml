@@ -1,0 +1,30 @@
+<?php
+
+use System\Entity\CronJob;
+
+/* @var $cronjob CronJob */
+
+$tabs = [
+    'general' => [
+        'title' => 'General info',
+        'url' => $this->url->get(['for' => 'cronjobs_edit', 'id' => $cronjob->getId()])
+    ],
+    'log' => [
+        'title' => 'Log',
+        'url' => $this->url->get(['for' => 'cronjobs_log', 'id' => $cronjob->getId()])
+    ]
+];
+
+?>
+
+    <div class="sp10"></div>
+    <ul class="nav nav-tabs">
+<?php
+    foreach ($tabs as $key => $data) :
+        $class = $tab === $key ? ' class="active"' : '';
+        $url = $tab === $key ? 'javascript:;' : $data['url'];
+?>
+        <li<?php echo $class; ?>><?php echo sprintf('<a href="%s">%s</a>', $url, $data['title']); ?></li>
+<?php endforeach; ?>
+    </ul>
+    <div class="c sp20"></div>

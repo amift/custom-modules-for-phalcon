@@ -1,0 +1,104 @@
+<?php
+
+    use Articles\Entity\Article;
+    use Polls\Entity\Poll;
+    use Translations\Tool\Group;
+
+    /* @var $article Article */
+
+    /* @var $poll Poll */
+
+    $this->translator->setGroup(Group::POLLS);
+
+    $e = new \Phalcon\Escaper();
+
+    $textWhenMany = $this->translator->trans('multiple_votes_text', 'balsojumi');
+    $textWhenOne = $this->translator->trans('one_vote_text', 'balsojums');
+    $textWhenNoVotes = $this->translator->trans('no_votes_text', 'Nav balsojumu');
+
+?>
+
+        <div class="col-md-9 col-sm-9 col-xs-12 full-article">
+
+            <div class="container-fluid">
+                <div class="row heading">
+                    <div class="col-md-7 col-sm-7 col-xs-7 dd">
+                        <?php echo $poll->getOpenViewDate(); ?>
+                    </div>
+                    <div class="col-md-5 col-sm-5 col-xs-5 social">
+                        <a href="javascript:;" onclick="sharer.fb('<?php echo $this->config->web_url . $poll->getFullUrl(); ?>', '<?php echo $this->metaData->getLikeMetaTitle($poll->getTitle()); ?>', '', '<?php echo $this->metaData->getLikeMetaDescription(''); ?>');" title="Facebook" class="fb"><i class="fa fa-facebook"></i></a>
+                        <a href="javascript:;" onclick="sharer.tw('<?php echo $this->config->web_url . $poll->getFullUrl(); ?>', '<?php echo $this->metaData->getLikeMetaTitle($poll->getTitle()); ?>', '', '<?php echo $this->metaData->getLikeMetaDescription(''); ?>');" title="Twitter" class="tw"><i class="fa fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="questions" id="poll<?php echo $poll->getId(); ?>Block">
+<?php echo $this->pollsRenderer->renderSideBarPollInlinePart($poll); ?>
+            </div>
+
+            <div class="container-fluid">
+                <div id="commentsBlock" data-url="<?php echo $this->url->get(['for' => 'poll_load_comments', 'id' => $poll->getId(), 'order' => 'asc', 'page' => '1']); ?>">
+
+                    <div class="row comment-header">
+                        <div class="col-md-12 col-sm-12 col-xs-12 title">
+                            <h2><?php echo $this->translator->trans('comments_list_block_title', 'Komentāri', Group::ARTICLES); ?></h2>
+<?php if (!$this->auth->isAuthorised()) : ?>
+                            <span class="dd"><?php echo $this->translator->trans('comments_list_block_unathorised_info_text', 'Tikai reģistrētie lietotāji var atstāt komentārus', Group::ARTICLES); ?></span>
+                            <span class="sign"><a href="javascript:;" data-toggle="modal" data-target="#Login" title="<?php echo $this->translator->trans('login_popup_btn_login', 'Ienākt', Group::MEMBERS); ?>"><?php echo $this->translator->trans('login_popup_btn_login', 'Ienākt', Group::MEMBERS); ?></a><a href="javascript:;" data-toggle="modal" data-target="#Register" title="<?php echo $this->translator->trans('register_popup_btn_register', 'Reģistrēties', Group::MEMBERS); ?>"><?php echo $this->translator->trans('register_popup_btn_register', 'Reģistrēties', Group::MEMBERS); ?></a></span>
+<?php endif; ?>
+                        </div>
+                        <div class="col-md-12 col-sm-12 col-xs-12 filter" id="commentsFilterBlock" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="row comment-header" id="commentsListBlock">
+                    </div>
+
+                    <div class="row comment-header" id="commentsPaginatorBlock" style="display: none;">
+                    </div>
+
+<?php if ($this->auth->isAuthorised()) : ?>
+                    <div class="row comment-header">
+                        <div class="col-md-12 col-sm-12 col-xs-12 title">
+                            <h2><?php echo $this->translator->trans('comment_add_block_title', 'Komentēt', Group::ARTICLES); ?></h2>
+                            <span class="dd smaller"><?php echo $this->translator->trans('comment_add_info_text', 'Into text Помните, что все дискуссии на сайте модерируются. Ваше сообщение может быть удалено, если оно будет содержать мат, оскорбление спортсменов, команд, других пользователей или сайта, проявления расизма или нацизма, а также спам. Если вы видите комментарий, нарушающий правила сообщества AllSports.lv, сообщайте о нем модераторам, используя ссылку "Пожаловаться".', Group::ARTICLES); ?></span>
+                        </div>
+                        <div class="col-md-9 col-sm-9 col-xs-12 textarea">
+                            <textarea id="txtComment"></textarea>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 submit">
+                            <a href="javascript:;" onclick="comments.add('<?php echo $this->url->get(['for' => 'poll_save_comment', 'id' => $poll->getId()]); ?>');" title="<?php echo $this->translator->trans('comment_add_button', 'Pievienot', Group::ARTICLES); ?>" class="publish"><?php echo $this->translator->trans('comment_add_button', 'Pievienot', Group::ARTICLES); ?></a>
+                        </div>
+                    </div>
+<?php endif; ?>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-3 col-xs-12 recent-news right-side">
+            <h3>
+                <i class="fa fa-bolt"></i><?php echo $this->translator->trans('side_news_title', 'Aktuāli'); ?>
+                <a href="<?php echo $this->url->get(['for' => 'article_add_textual']); ?>" title="<?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu', Group::NOT_SET); ?>"><span class="title"><?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu', Group::NOT_SET); ?></span><i class="fa fa-plus"></i></a>
+            </h3>
+<?php
+if ($articles !== null && count($articles) > 0) :
+    foreach ($articles as $article) :
+        /* @var $article Article */
+?>
+            <dl>
+                <dt><?php echo $article->getCategoryLvl1()->getTitle(); ?></dt>
+                <dd><span class="time"><?php echo $article->getListViewDate(); ?></span><a href="<?php echo $article->getFullUrl(); ?>" class="article"><?php echo $article->getTitle(); ?></a><a href="<?php echo $article->getFullUrl(); ?>" class="comment"><?php echo $article->getFormattedCommentsCount(); ?></a></dd>
+            </dl>
+<?php endforeach; ?>
+<?php endif; ?>
+            <div class="banners">
+                <div class="single-banner banner160x600px">
+                    <a href="<?php echo $this->url->get(['for' => 'document_advertising_opportunities']); ?>" title="<?php echo $this->translator->trans('link_text_learn_more', 'Uzzini vairāk', Group::NOT_SET); ?>">
+                        <img src="/assets/img/160x0600px-blank.jpg" border="0" />
+                    </a>
+                </div>
+            </div>
+        </div>
+
+<?php $this->translator->unsetGroup(); ?>

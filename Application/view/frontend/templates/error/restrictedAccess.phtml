@@ -1,0 +1,16 @@
+<?php
+
+use Translations\Tool\Group;
+
+$this->translator->setGroup(Group::NOT_SET);
+
+?>
+        <div class="col-md-12 col-sm-12 col-xs-12 congratulations warning">
+            <i class="fa fa-frown-o"></i>
+            <h1><?php echo $this->translator->trans('error_resctriced_access_heading', 'Nepareiza pieķļuve!'); ?></h1>
+            <span class="dd">
+                <?php echo $this->translator->trans('error_resctriced_access_info_text', 'Nekorekti pieprasīti profila sadaļa.'); ?>
+            </span>
+            <a href="<?php echo $this->url->get(['for' => '/']); ?>" class="back" title="<?php echo $this->translator->trans('link_text_startpage', 'Sākumlapa'); ?>"><?php echo $this->translator->trans('link_text_go_to_homepage', 'Iet uz galveno sadaļu'); ?></a>
+        </div>
+<?php $this->translator->unsetGroup(); ?>

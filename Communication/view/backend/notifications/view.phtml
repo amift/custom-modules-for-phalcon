@@ -1,0 +1,143 @@
+<?php
+
+    use Communication\Entity\Notification;
+    use Communication\Entity\Template;
+    use Communication\Tool\TemplateModule;
+    use Communication\Tool\TemplateType;
+    use Members\Entity\Member;
+
+    /* @var $notification Notification */
+
+    $member = $notification->getMember();
+    /* @var $member Member */
+
+    $template = $notification->getTemplate();
+    /* @var $template Template */
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="<?php echo $this->url->get(['for' => 'notifications_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>Notification</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="sp30"></div>
+    <div class="status_label_cont sz-34">
+        <?php echo $this->notificationStatus->big($notification); ?>
+    </div>
+    
+<?php if ($notification->getSendingError() !== null && strlen($notification->getSendingError()) > 0) { ?>
+    <div class="sp10"></div>
+    <div>
+        <div class="msg-warning">
+            <b>Error:</b>
+            <span style="color: red;"><?php echo $notification->getSendingError(); ?></span>
+        </div>
+    </div>
+<?php } ?>
+
+    <div class="sp33"></div>
+    <div class="row">
+        <div class="col-lg-5 col-br">
+<?php if (is_object($template)) : ?>
+            <div class="row">
+                <div class="col-lg-4"><b>Template</b></div>
+                <div class="col-lg-8"><?php echo $template->getTitle(); ?></div>
+            </div>
+            <div class="sp14"></div>
+            <div class="row">
+                <div class="col-lg-4"><b>Module</b></div>
+                <div class="col-lg-8"><?php echo TemplateModule::getLabel($template->getModule()); ?></div>
+            </div>
+            <div class="sp14"></div>
+            <div class="row">
+                <div class="col-lg-4"><b>Type</b></div>
+                <div class="col-lg-8"><?php echo TemplateType::getLabel($template->getType()); ?></div>
+            </div>
+            <div class="sp14"></div>
+            <div class="row">
+                <div class="col-lg-4"><b>Scheduled date</b></div>
+                <div class="col-lg-8"><?php echo $notification->getToSendAt() === null ? '-' : $notification->getToSendAt()->format('d/m/Y H:i:s'); ?></div>
+            </div>
+<?php endif; ?>
+<?php if (is_object($member)) : ?>
+            <div class="sp14"></div>
+            <div class="row">
+                <div class="col-lg-4"><b>Member</b></div>
+                <div class="col-lg-8"><a href="<?php echo $this->url->get(['for' => 'members_view', 'id' => $member->getId()]); ?>" target="_blank"><?php echo (string)$member; ?></a></div>
+            </div>
+<?php endif; ?>
+            <div class="sp14"></div>
+            <div class="row">
+                <div class="col-lg-4"><b>Sent to</b></div>
+                <div class="col-lg-8"><?php echo $notification->getReceiver(); ?></div>
+            </div>
+            <div class="sp14"></div>
+            <div class="row">
+                <div class="col-lg-4"><b>Sent at</b></div>
+                <div class="col-lg-8"><?php echo $notification->getSentAt() === null ? '-' : $notification->getSentAt()->format('d/m/Y H:i:s'); ?></div>
+            </div>
+            <div class="sp14"></div>
+            <div class="row">
+                <div class="col-lg-4"><b>Sent from name</b></div>
+                <div class="col-lg-8"><?php echo $notification->getFromName(); ?></div>
+            </div>
+            <div class="sp14"></div>
+            <div class="row">
+                <div class="col-lg-4"><b>Sent from e-mail</b></div>
+                <div class="col-lg-8"><?php echo $notification->getFromEmail(); ?></div>
+            </div>
+<?php
+    if (! empty($notification->getSendingDetails())) {
+        foreach ($notification->getSendingDetails() as $key => $value) {
+?>
+            <div class="sp14"></div>
+            <div class="row">
+                <div class="col-lg-4"><b><?php echo ucfirst($key); ?></b></div>
+                <div class="col-lg-8"><?php echo is_array($value) ? implode(', ', $value) : $value; ?></div>
+            </div>
+<?php
+        }
+    }
+?>
+        </div>
+        <div class="col-lg-7 message_contents">
+            <div><b>Subject</b></div>
+            <div class="sp6"></div>
+            <div><?php echo $notification->getSubject(); ?></div>
+            <div class="sp12"></div>
+            <div><b>Content</b></div>
+            <div class="sp6"></div>
+            <div><?php echo $notification->getBody(); ?></div>
+            <?php /* ?><?php if (count($notification->getAttachments()) > 0) { ?>
+                <div class="sp12"></div>
+                <div><b>Attachments</b></div>
+                <div class="sp6"></div>
+                <div>
+                    <?php foreach ($notification->getAttachments() as $idx => $att) { ?>
+                        <div><?php echo $this->link(
+                            $att['filename'],
+                            'download_email_notification_attachment',
+                            [ 'id' => $notification->getId(), 'key' => $idx ],
+                            '<a href="{url}" target="_blank" >{label}</a>',
+                            '{label}',
+                            false
+                        ) ?></div>
+                        <div class="sp2"></div>
+                    <?php } ?>
+                </div>
+            <?php } ?><?php */ ?>
+        </div>
+    </div>
+
+    <div class="sp75"></div>
+</div>

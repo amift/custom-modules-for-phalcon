@@ -1,0 +1,42 @@
+<?php
+
+    use Polls\Entity\Poll;
+    use Translations\Tool\Group;
+
+    $this->translator->setGroup(Group::POLLS);
+
+    $e = new Phalcon\Escaper();
+
+    /* @var $poll Poll */
+
+    $textWhenMany = $this->translator->trans('multiple_votes_text', 'balsojumi');
+    $textWhenOne = $this->translator->trans('one_vote_text', 'balsojums');
+    $textWhenNoVotes = $this->translator->trans('no_votes_text', 'Nav balsojumu');
+
+?>
+
+                <div class="header">
+                    <h5><a href="<?php echo $poll->getFullUrl(); ?>" title="<?php echo $e->escapeHtmlAttr($poll->getTitle()); ?>"><?php echo $poll->getTitle(); ?></a></h5>
+                    <span class="comments"><span><?php echo $poll->getFormattedVotesCount($textWhenMany, $textWhenOne, $textWhenNoVotes); ?></span><a href="<?php echo $poll->getFullUrl(); ?>"><?php echo $poll->getFormattedCommentsCount(); ?></a></span>
+                </div>
+                <div id="poll<?php echo $poll->getId(); ?>OptionsBlock">
+<?php
+    foreach ($poll->getOptions() as $pollOption) {
+        if ($showResults && is_object($votedOption)) {
+            $optClass = 'answer result' . ($votedOption->getId() === $pollOption->getId() ? ' my-result' : '');
+            $optAttributes = ' class="'.$optClass.'" style="cursor:default;"';
+        } else {
+            $optAttributes = " class=\"answer\" onclick=\"polls.vote('".$poll->getId()."', '/polls/vote/".$poll->getId()."/".$pollOption->getId()."');\"";
+        }
+?>
+                    <a href="javascript:;"<?php echo $optAttributes; ?> title="<?php echo $e->escapeHtmlAttr($pollOption->getTitle()); ?>">
+                        <span class="pic"><?php if ($pollOption->hasImage()) : ?><img src="<?php echo $pollOption->getImagePublicPath(); ?>" border="0" /><?php endif; ?></span><span class="title"><?php echo $pollOption->getTitle(); ?></span><span class="percent"><?php echo $pollOption->getVotesPercent(); ?>%</span>
+<?php if ($showResults && is_object($votedOption)) : ?>
+                        <span class="filled" style="width: <?php echo $pollOption->getVotesPercent(); ?>%;"></span>
+                        <span class="filled-border" style="width: <?php echo $pollOption->getVotesPercent(); ?>%;"></span>
+<?php endif; ?>
+                    </a>
+<?php } ?>
+                </div>
+
+<?php $this->translator->unsetGroup(); ?>

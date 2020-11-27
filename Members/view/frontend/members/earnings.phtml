@@ -1,0 +1,133 @@
+<?php
+
+use Translations\Tool\Group;
+
+$this->translator->setGroup(Group::MEMBERS);
+
+?>
+
+        <div class="col-md-12 col-sm-12 col-xs-12 heading">
+            <h1><?php echo $this->translator->trans('profile_h1_my_profile', 'Mans profils'); ?></h1>
+            <ul class="sub-nav">
+                <li>
+                    <a href="<?php echo $this->url->get(['for' => 'member_profile']); ?>" title="<?php echo $this->translator->trans('menu_profile_general', 'Mani Dati'); ?>"><?php echo $this->translator->trans('menu_profile_general', 'Mani Dati'); ?></a>
+                </li><li>
+                    <a href="<?php echo $this->url->get(['for' => 'member_earnings']); ?>" title="<?php echo $this->translator->trans('menu_profile_earnings', 'Peļņa'); ?>" class="active"><?php echo $this->translator->trans('menu_profile_earnings', 'Peļņa'); ?></a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12 overall withdraw" id="withdrawBlock">
+            <h2><?php echo $this->translator->trans('profile_h2_request_withdraw', 'Izmaksas pieteikšana'); ?></h2>
+            <div class="container-fluid">
+                <div class="row form-group">
+                    <div class="col-md-5 col-sm-6 col-xs-6 title"><?php echo $this->translator->trans('lbl_exchange_rate', 'Kurss'); ?></div>
+                    <div class="col-md-7 col-sm-6 col-xs-6 dd amount"><?php echo $this->translator->trans('lbl_exchange_rate_value', '200 Punkti = 1 Eiro'); ?></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-5 col-sm-6 col-xs-6 title"><?php echo $this->translator->trans('lbl_points_total_actual', 'Pieejamie punkti'); ?></div>
+                    <div class="col-md-7 col-sm-6 col-xs-6 dd points"><?php echo is_object($member->getTotalPointsData()) ? $member->getTotalPointsData()->getTotalActual() : '-'; ?></div>
+                </div>
+
+                <?php
+                    echo $form->openTag($action, [
+                        'method' => 'post',
+                        'name'   => 'frmCreateWithdraw',
+                        'id'     => 'frmCreateWithdraw'
+                    ]);
+                ?>
+
+                    <div class="row form-group">
+                        <div class="col-md-5 col-sm-6 col-xs-6 title lg"><?php echo $this->translator->trans('lbl_exchange_type', 'Izmaksas veids'); ?></div>
+                        <div class="col-md-7 col-sm-6 col-xs-6 input">
+                            <div class="input">
+                                <?php echo $form->render('type'); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row form-group paypalDetailsField">
+                        <div class="col-md-5 col-sm-6 col-xs-6 title lg"><?php echo $this->translator->trans('lbl_exchange_paypal_email', 'PayPal E-pasts'); ?></div>
+                        <div class="col-md-7 col-sm-6 col-xs-6 input">
+                            <?php echo $form->render('paypalEmail'); ?>
+                        </div>
+                    </div>
+                    <div class="row form-group bankTransferDetailsField">
+                        <div class="col-md-5 col-sm-6 col-xs-6 title lg"><?php echo $this->translator->trans('lbl_exchange_bank_name', 'Bankas Nosaukums'); ?></div>
+                        <div class="col-md-7 col-sm-6 col-xs-6 input">
+                            <?php echo $form->render('bankName'); ?>
+                        </div>
+                    </div>
+                    <div class="row form-group bankTransferDetailsField">
+                        <div class="col-md-5 col-sm-6 col-xs-6 title lg"><?php echo $this->translator->trans('lbl_exchange_bank_account', 'Bankas Konts'); ?></div>
+                        <div class="col-md-7 col-sm-6 col-xs-6 input">
+                            <?php echo $form->render('bankAccount'); ?>
+                        </div>
+                    </div>
+                    <div class="row form-group bankTransferDetailsField">
+                        <div class="col-md-5 col-sm-6 col-xs-6 title lg"><?php echo $this->translator->trans('lbl_exchange_receiver', 'Vārds Uzvārds'); ?></div>
+                        <div class="col-md-7 col-sm-6 col-xs-6 input">
+                            <?php echo $form->render('receiverName'); ?>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-5 col-sm-6 col-xs-6 title lg"><?php echo $this->translator->trans('lbl_exchange_pts', 'Punkti maiņai'); ?></div>
+                        <div class="col-md-3 col-sm-3 col-xs-3 input points">
+                            <?php echo $form->render('pts'); ?>
+                        </div>
+                        <div class="col-md-4 col-sm-3 col-xs-3 title min lg">
+                            <?php echo $this->translator->trans('lbl_exchange_pts_min_info', 'Min. 1000'); ?>
+                        </div>
+                    </div>
+
+                <?php echo $form->closeTag(); ?>
+
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 add-new">
+                        <a href="javascript:;" tabindex="7" id="btnSaveWithdraw" title="<?php echo $this->translator->trans('btn_receive', 'Saņemt'); ?>"><?php echo $this->translator->trans('btn_receive', 'Saņemt'); ?></a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="col-md-8 col-sm-6 col-xs-12 overall">
+            <h2><?php echo $this->translator->trans('profile_h2_withdraw_history', 'Izmaksu vēsture'); ?></h2>
+<?php
+    if (count($paginator) > 0) :
+?>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th><?php echo $this->translator->trans('profile_h2_withdraws_th_date', 'Datums'); ?></th>
+                            <th><?php echo $this->translator->trans('profile_h2_withdraws_th_status', 'Statuss'); ?></th>
+                            <th><?php echo $this->translator->trans('profile_h2_withdraws_th_points', 'Punkti'); ?></th>
+                            <th><?php echo $this->translator->trans('profile_h2_withdraws_th_amount', 'Summa'); ?></th>
+                            <th><?php echo $this->translator->trans('lbl_exchange_type', 'Izmaksas veids'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+<?php
+        foreach ($paginator as $withdraw) {
+            $stateLabel = $withdraw->getStateLabel();
+?>
+                        <tr>
+                            <td class="date"><?php echo is_object($withdraw->getCreatedAt()) ? $withdraw->getCreatedAt()->format('d.m.Y') : '-'; ?></td>
+                            <td class="<?php echo $withdraw->getFrontendStateClass(); ?>"><?php echo $this->translator->trans('lbl_withdraw_status_'.$stateLabel, $stateLabel); ?></td>
+                            <td class="points"><?php echo $withdraw->getPts(); ?></td>
+                            <td class="points"><?php echo sprintf('%s %s', $withdraw->getAmount(), $withdraw->getCurrency()); ?></td>
+                            <td class=""><?php echo $this->translator->trans('lbl_withdraw_type_'.$withdraw->getTypeLabel(), $withdraw->getTypeLabel()); ?></td>
+                        </tr>
+<?php   } ?>
+                    </tbody>
+                </table>
+            </div>
+<?php
+        echo $this->gridPager->links($fullUrl, $paginator, $page, $perPage);
+    else :
+?>
+            <h3><?php echo $this->translator->trans('lbl_withdraw_history_no_rows', 'Pašlaik nav neviena pieteikuma naudas izmaksas saņemšanai'); ?></h3>
+<?php
+    endif;
+?>
+        </div>
+
+<?php $this->translator->unsetGroup(); ?>

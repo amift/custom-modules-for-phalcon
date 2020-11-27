@@ -1,0 +1,126 @@
+<?php
+
+    use Forum\Entity\ForumReply;
+    use Forum\Entity\ForumReportedReply;
+    use Forum\Entity\ForumTopic;
+    use Forum\Tool\ForumReportedReplyState;
+    use Members\Entity\Member;
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <h1>Forum Reported Replies</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('replies/partials/reported-list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <!--<th style="width:85px;">ID</th>-->
+                <th style="width:70px;">Date</th>
+                <th style="width:225px;">Reported By</th>
+                <th>Comment</th>
+                <th style="width:85px;">Status</th>
+                <th style="width:170px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    foreach ($paginator as $reported) {
+        /* @var $reported ForumReportedReply */
+
+        $member = $reported->getMember();
+        /* @var $member Member */
+
+        $reply = $reported->getReply();
+        /* @var $reply ForumReply */
+
+        $topic = $reply->getTopic();
+        /* @var $topic ForumTopic */
+
+        $createdAt = $reported->getCreatedAt();
+?>
+            <tr>
+                <!--<td><?php echo $reported->getId(); ?></td>-->
+                <td><?php if (is_object($createdAt)) : ?>
+                    <div class="fs-1214"><?php echo $createdAt->format('d/m/y'); ?></div>
+                    <div class="fs-1214"><?php echo $createdAt->format('H:i:s'); ?></div>
+                <?php else :
+                        echo '-';
+                    endif;
+                ?></td>
+                <td>
+                    <?php
+                        if (is_object($member)) :
+                            echo $this->tag->linkTo([['for' => 'members_view', 'id' => $member->getId()], (string)$member]);
+                        else : 
+                            echo '<div class="fs-1214">Session: '.$reported->getSessionId().'</div>';
+                        endif;
+                    ?>
+                    <div class="fs-1214">IP: <?php echo $reply->getIpAddress(); ?></div>
+                </td>
+                <td>
+                    <?php
+                        if (is_object($reply)) :
+                            echo $this->tag->linkTo([['for' => 'forum_replies_edit', 'id' => $reply->getId()], (string)$reply]);
+                        endif;
+                    ?>
+                    <div class="fs-1214"><?php echo $reply->getContent(); ?></div>
+                    <?php
+                        if (is_object($topic)) :
+                            echo $this->tag->linkTo([['for' => 'forum_topics_edit', 'id' => $topic->getId()], 'On Topic: '.(string)$topic]) . '<br>';
+                        endif;
+                    ?>
+                </td>
+                <td><?php echo $this->enableStatus->tableByCustomValue($reported->getState(), ForumReportedReplyState::getLabels(), ForumReportedReplyState::getStyles()); ?></td>
+                <td>
+                    <div class="links">
+                        <?php if ($reported->isStateNew()) : ?>
+                            <?php echo $this->tag->linkTo([['for' => 'forum_reported_reply_ignore', 'id' => $reported->getId()], 'Ignore']); ?>
+                            <div class="fs-1214"><br></div>
+                        <?php endif; ?>
+                        <?php if (!$reported->isStateAccepted()) : ?>
+                            <?php echo $this->tag->linkTo([['for' => 'forum_reported_reply_accept', 'id' => $reported->getId()], 'Accept (block reply)']); ?>
+                        <?php endif; ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+        gridFilter.init('<?php echo $this->url->get(['for' => 'forum_reported_replies_list']); ?>');
+    });
+</script>

@@ -1,0 +1,100 @@
+<?php
+
+    use Communication\Entity\Notification;
+    use Communication\Entity\Template;
+    use Members\Entity\Member;
+    use Phalcon\Escaper;
+
+    $e = new Escaper();
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <h1>Notifications</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('notifications/partials/list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:165px;">Member / To</th>
+                <th style="width:165px;">Template</th>
+                <th>Message</th>
+                <th style="width:85px;">Status</th>
+                <th style="width:60px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    foreach ($paginator as $notification) {
+        /* @var $notification Notification */
+        
+        $member = $notification->getMember();
+        /* @var $member Member */
+        
+        $template = $notification->getTemplate();
+        /* @var $template Template */
+?>
+            <tr>
+                <td>
+<?php if (is_object($member)) : ?>
+                    <a href="<?php echo $this->url->get(['for' => 'members_view', 'id' => $member->getId()]); ?>" target="_blank"><div><?php echo (string)$member; ?></div></a>
+                    <div class="sp6"></div>
+<?php endif; ?>
+                    <div><?php echo $notification->getReceiver(); ?></div>
+                </td>
+                <td><?php echo is_object($template) ? $template->getTitle() : '-'; ?></td>
+                <td>
+                    <div><b><?php echo $notification->getSubject(); ?></b></div>
+                    <div class="sp6"></div>
+                    <div class="fs-1214"><?php echo $e->escapeHtml($notification->getBody()); ?></div>
+                </td>
+                <td><?php echo $this->notificationStatus->table($notification); ?></td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'notifications_view', 'id' => $notification->getId()], 'View']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Init list filters and search actions
+        gridFilter.init('<?php echo $this->url->get(['for' => 'notifications_list']); ?>');
+
+    });
+</script>

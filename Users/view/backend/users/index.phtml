@@ -1,0 +1,90 @@
+<?php
+
+    use Users\Entity\User;
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+            <?php echo $this->tag->linkTo([['for' => 'users_add'], 'Add new', 'class' => 'btn btn-default w-95']); ?>
+        </div>
+        <h1>Users</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('users/partials/list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:85px;">ID</th>
+                <th>Name Surname</th>
+                <th>Email</th>
+                <th style="width:125px;">Phone</th>
+                <th style="width:145px;">Last Login</th>
+                <th style="width:115px;">Status</th>
+                <th style="width:65px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    foreach ($paginator as $user) { 
+        /* @var $user User */
+?>
+            <tr>
+                <td><?php echo $user->getId(); ?></td>
+                <td><?php echo sprintf('%s %s', $user->getFirstName(), $user->getLastName()); ?></td>
+                <td><?php echo $user->getEmail(); ?></td>
+                <td><?php echo $user->getPhone(); ?></td>
+                <td><?php if (is_object($user->getLoginLastAt())) : ?>
+                    <div><?php echo $user->getLoginLastAt()->format('d/m/y H:i'); ?></div>
+                    <div class="fs-1214"><?php echo ($user->getLoginLastIp() !== '' ? 'IP: ' . $user->getLoginLastIp() : ''); ?></div>
+                <?php else :
+                        echo '-';
+                    endif;
+                ?></td>
+                <td><?php echo $this->userStatus->table($user); ?></td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'users_edit', 'id' => $user->getId()], 'Edit']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Init list filters and search actions
+        gridFilter.init('<?php echo $this->url->get(['for' => 'users_list']); ?>');
+
+    });
+</script>

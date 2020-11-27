@@ -1,0 +1,24 @@
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="<?php echo $this->url->get(['for' => 'users_edit', 'id' => $user->getId()]); ?>" class="btn btn-default w-100" id="btnEdit" tabindex="100">Edit</a>
+            <a href="<?php echo $this->url->get(['for' => 'users_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>User information</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('users/partials/user-tabs'); ?>
+
+    <?php echo $this->partial('users/partials/view-edit-form'); ?>
+
+    <div class="sp75"></div>
+</div>

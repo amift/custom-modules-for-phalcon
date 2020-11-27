@@ -1,0 +1,102 @@
+<?php
+
+    use Statistics\Entity\SportLeague;
+    use Statistics\Entity\SportLeagueGroup;
+    use Statistics\Entity\SportType;
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+            <?php echo $this->tag->linkTo([['for' => 'sport_leagues_add'], 'Add new', 'class' => 'btn btn-default w-95']); ?>
+        </div>
+        <h1>Sport Leagues</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('leagues/partials/list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:210px;">Sport type</th>
+                <th style="width:330px;">Title</th>
+                <th>Groups</th>
+                <th style="width:270px;">Articles category</th>
+                <th style="width:65px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    $total = count($paginator);
+    $current = 0;
+    foreach ($paginator as $league) {
+        /* @var $league SportLeague */
+
+        $type = $league->getSportType();
+        /* @var $type SportType */
+        
+        $current++;
+
+        $groups = [];
+        foreach ($league->getGroups() as $group) {
+            /* @var $group SportLeagueGroup */
+            $groups[] = $group->getTitle();
+        }
+        
+        $categories = [];
+        $articleCategoryLvl1 = $type->getArticleCategoryLvl1();
+        if (is_object($articleCategoryLvl1)) {
+            $categories[$articleCategoryLvl1->getId()] = $articleCategoryLvl1->getTitle();
+        }
+        $articleCategoryLvl2 = $league->getArticleCategoryLvl2();
+        if (is_object($articleCategoryLvl2)) {
+            $categories[$articleCategoryLvl2->getId()] = $articleCategoryLvl2->getTitle();
+        }
+?>
+            <tr>
+                <td><?php echo is_object($type) ? $type->getTitle() : '-'; ?></td>
+                <td><?php echo $league->getTitle(); ?></td>
+                <td><?php echo count($groups) > 0 ? implode(', ', $groups) : '-'; ?></td>
+                <td><?php echo count($categories) > 0 ? implode(' / ', $categories) : '-'; ?></td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'sport_leagues_edit', 'id' => $league->getId()], 'Edit']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+        gridFilter.init('<?php echo $this->url->get(['for' => 'sport_leagues_list']); ?>');
+    });
+</script>

@@ -1,0 +1,27 @@
+
+    <div class="sp15"></div>
+    <div class="table-filters">
+        <div>
+            <div class="filter-group">
+                <label for="group">Group</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "group",
+                        $groups,
+                        'value' => $filters['group'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '250px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="c"></div>
+            <div class="afterfilter_options">
+                <div class="filter_clear_line">
+                    <a href="javascript:;" class="filter_btn" id="btnFilter">Filter</a>
+                    <a href="javascript:;" class="clear_filter_btn" id="btnClearFilter">Clear filter</a>
+                </div>
+            </div>
+        </div>
+    </div>

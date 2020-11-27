@@ -1,0 +1,151 @@
+<?php
+
+    use Forum\Entity\ForumReply;
+    use Forum\Entity\ForumTopic;
+    use Members\Entity\Member;
+
+    /* @var $reply ForumReply */
+
+    $topic = $reply->getTopic();
+    /* @var $topic ForumTopic */
+
+    $member = $reply->getMember();
+    /* @var $member Member */
+
+    $createdAt = $reply->getCreatedAt();
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <a href="javascript:;" class="btn btn-primary w-100" id="btnSave" tabindex="100">Save</a>
+            <a href="<?php echo $this->url->get(['for' => 'forum_replies_list']); ?>" class="btn btn-default w-100" tabindex="101">Cancel</a>
+        </div>
+        <h1>Edit reply</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="sp34"></div>
+
+    <?php
+        echo $form->openTag($action, [
+            'method' => 'post',
+            'name'   => 'frmReplyEdit',
+            'id'     => 'frmReplyEdit'
+        ]);
+    ?>
+        <?php echo $form->render("id"); ?>
+        <?php echo $form->render("csrf"); ?>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="sp27"></div>
+                <h2>General</h2>
+                <div class="sp21"></div>
+                <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                    <tr>
+                        <td>ID</td>
+                        <td><b><?php echo $reply->getId(); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Created at</td>
+                        <td><b><?php echo $createdAt->format('d/m/y H:i:s'); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Rate</td>
+                        <td><b><?php echo $reply->getRateAvg(); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Is reply</td>
+                        <td><b><?php echo is_object($reply->getReplyOnComment()) ? 'Yes, answer on ' . $this->tag->linkTo([['for' => 'forum_replies_edit', 'id' => $reply->getReplyOnComment()->getId()], (string)$reply]) : 'No'; ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Has replies</td>
+                        <td><b><?php echo count($reply->getReplyComments()) ? 'Yes, has ' . count($reply->getReplyComments()) . ' replies' : 'No'; ?></b></td>
+                    </tr>
+<?php if (is_object($topic)) : ?>
+                    <tr>
+                        <td>Topic</td>
+                        <td><b><?php echo $this->tag->linkTo([['for' => 'forum_topics_edit', 'id' => $topic->getId()], (string)$topic]); ?></b></td>
+                    </tr>
+<?php endif; ?>
+                    <tr>
+                        <td>Member</td>
+                        <td><b><?php echo is_object($member) ? 
+                        $this->tag->linkTo([['for' => 'members_view', 'id' => $member->getId()], (string)$member]) 
+                        : '-'; ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>IP Address</td>
+                        <td><b><?php echo $reply->getIpAddress(); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Session ID</td>
+                        <td><b><?php echo $reply->getSessionId(); ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Browser User Agent</td>
+                        <td><b><?php echo $reply->getUserAgent(); ?></b></td>
+                    </tr>
+                </tbody></table>
+                <div class="sp24"></div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="sp27"></div>
+                        <h2>Info</h2>
+                        <div class="sp21"></div>
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <?php echo $form->renderWithLabel('blocked'); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <?php echo $form->renderWithLabel('content'); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <?php echo $form->closeTag(); ?>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $("#frmReplyEdit").submit();
+        });
+
+    });
+</script>

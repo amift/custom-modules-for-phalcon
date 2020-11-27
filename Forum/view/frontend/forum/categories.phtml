@@ -1,0 +1,133 @@
+<?php
+
+    use Translations\Tool\Group;
+
+    $this->translator->setGroup(Group::FORUM);
+
+    $e = new Phalcon\Escaper();
+
+    $breadcrumbCounts = count($breadcrumbUrls);
+
+?>
+
+            <div class="col-md-12 col-sm-12 col-xs-12 content">
+                <div class="container-fluid">
+
+<?php if ($breadcrumbCounts > 1) : ?>
+                    <div class="row reset-border">
+                        <div class="col-md-12 col-sm-12 col-xs-12 path">
+<?php
+    $counter = 0;
+    foreach ($breadcrumbUrls as $breadcrumbUrl) {
+        $counter++;
+        if ($counter < $breadcrumbCounts) {
+            ?><a href="<?php echo $breadcrumbUrl['url']; ?>"><?php echo $breadcrumbUrl['title']; ?></a> / <?php
+        } else {
+            echo $breadcrumbUrl['title'];
+        }
+    }
+?>
+                        </div>
+                    </div>
+<?php endif; ?>
+
+                    <div class="row even">
+                        <div class="col-md-6 col-sm-6 col-xs-6 th th-left">
+                            <i class="fa fa-shield"></i><?php echo $this->translator->trans('forum_category', 'Kategorija'); ?>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-3 th th-left">
+                            <i class="fa fa-comment"></i><?php echo $this->translator->trans('forum_latest_comment', 'Jaunākā atbilde'); ?>
+                        </div>
+                        <div class="col-md-1 col-sm-1 col-xs-1 th">
+                            <i class="fa fa-archive"></i><?php echo $this->translator->trans('forum_topics_count', 'Tēmas'); ?>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2 th">
+                            <i class="fa fa-comments"></i><?php echo $this->translator->trans('forum_comments_count', 'Atbildes'); ?>
+                        </div>
+                    </div>
+
+<?php
+    foreach ($categories as $row) {
+        if (isset($row['childs']) && count($row['childs']) > 0) {
+?>
+                    <div class="row odd">
+                        <div class="col-md-12 col-sm-12 col-xs-12 category">
+<?php if ($breadcrumbCounts > 1) : ?>
+                            <?php echo $row['title']; ?>
+<?php else : ?>
+                            <a href="<?php echo $listBaseUrl . '/' . $row['slug']; ?>" title="<?php echo $e->escapeHtmlAttr($row['title']); ?>"><?php echo $row['title']; ?></a>
+<?php endif; ?>
+                            <span class="dd"><?php echo $row['description']; ?></span>
+                        </div>
+                    </div>
+<?php
+            foreach ($row['childs'] as $child) {
+                $replyUserName = $lastReply = $topicUrl = $lastReplyAt = '';
+                if (count($child['lastReply']) === 1) {
+                    foreach ($child['lastReply'] as $rp) {
+                        $replyUserName = (string)$rp['lastReplyByUsername'] !== '' ? $rp['lastReplyByUsername'] : '';
+                        $lastReply = (string)$rp['lastReply'] !== '' ? substr((string)$rp['lastReply'], 0, 50) : '';
+                        $topicUrl = $rp['topicUrl'];
+                        $lastReplyAt = $rp['lastReplyAt'];
+                        if (is_object($lastReplyAt)) {
+                            $now = new \DateTime('now');
+                            $now->setTime(10, 10, 10);
+                            $saved = clone $lastReplyAt;
+                            $saved->setTime(10, 10, 10);
+                            $days = (int)$now->diff($saved)->days;
+                            if ($days < 1) {
+                                $format = 'H:i';
+                            } elseif ($days < 356) {
+                                $format = 'd.m';
+                            } else {
+                                $format = 'd.m.Y';
+                            }
+                            $lastReplyAt = $lastReplyAt->format($format);
+                        }
+                        break;
+                    }
+                }
+?>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-6 td category-dd">
+                            <span class="title"><a href="<?php echo $listBaseUrl . '/' . $row['slug'] . '/' . $child['slug']; ?>" title="<?php echo $e->escapeHtmlAttr($child['title']); ?>"><?php echo $child['title']; ?></a></span>
+                            <span class="dd"><?php echo $child['description']; ?></span>
+<?php
+                if (isset($child['childs']) && count($child['childs']) > 0) : 
+?>
+                            <span class="sub-category"><?php echo $this->translator->trans('forum_subcategories', 'Apakškategorijas'); ?> <?php
+                        foreach ($child['childs'] as $child2) {
+                            ?><a href="<?php echo $listBaseUrl . '/' . $row['slug'] . '/' . $child['slug'] . '/' . $child2['slug']; ?>" title="<?php echo $e->escapeHtmlAttr($child2['title']); ?>"><?php echo $child2['title']; ?></a><?php
+                        }
+                    ?></span>
+<?php
+                endif;
+?>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-3 td latest-comment">
+                        <?php if ($replyUserName !== '' && $lastReply !== '') : ?>
+                            <span class="body">
+                                <a href="<?php echo $listBaseUrl . $topicUrl; ?>"><?php echo $lastReply; ?>...</a>
+                            </span>
+                            <span class="username"><?php echo $replyUserName; ?><?php if ($lastReplyAt !== null) : ?><span class="when"><?php echo $lastReplyAt; ?></span><?php endif; ?></span>
+                        <?php else : ?>
+                            -
+                        <?php endif; ?>
+                        </div>
+                        <div class="col-md-1 col-sm-1 col-xs-1 td themes">
+                            <?php echo $child['topicsCount']; ?>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2 td total-comments">
+                            <?php echo $child['commentsCount']; ?>
+                        </div>
+                    </div>
+<?php
+            }
+        }
+    }
+?>
+
+                </div>
+            </div>
+
+<?php $this->translator->unsetGroup(); ?>

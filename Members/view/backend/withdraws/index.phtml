@@ -1,0 +1,112 @@
+<?php
+
+    use Members\Entity\Member;
+    use Members\Entity\TotalPoints;
+    use Members\Entity\Withdraws;
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <h1>Withdraws</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('withdraws/partials/list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:85px;">ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th style="width:90px;">Pts</th>
+                <th style="width:115px;">Amount</th>
+                <th style="width:125px;">Type</th>
+                <th style="width:85px;">Date</th>
+                <th style="width:125px;">Status</th>
+                <th style="width:65px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    foreach ($paginator as $withdraw) { 
+        /* @var $withdraw Withdraws */
+
+        $member = $withdraw->getMember();
+        /* @var $member Member */
+
+        $totals = $member->getTotalPointsData();
+        /* @var $totals TotalPoints */
+
+        $date = $withdraw->getCreatedAt();
+
+        $availablePts = is_object($totals) ? $totals->getTotalActual() : 0;
+
+        $rowClass = $withdraw->isPending() && $availablePts < $withdraw->getPts() ? 'danger' : '';
+?>
+            <tr class="<?php echo $rowClass; ?>">
+                <td><?php echo $withdraw->getId(); ?></td>
+                <td><?php echo $member->getUsername(); ?></td>
+                <td><?php echo $member->getEmail(); ?></td>
+                <td><?php echo $withdraw->getPts(); ?></td>
+                <td><?php echo sprintf('%s %s', $withdraw->getAmount(), $withdraw->getCurrency()); ?></td>
+                <td><?php echo $withdraw->getTypeLabel(); ?></td>
+                <td><?php if (is_object($date)) : ?>
+                    <div class="fs-1214"><?php echo $date->format('d/m/y'); ?></div>
+                    <div class="fs-1214"><?php echo $date->format('H:i:s'); ?></div>
+                <?php else :
+                        echo '-';
+                    endif;
+                ?></td>
+                <td>
+                    <?php echo $this->withdrawStatus->table($withdraw); ?>
+                </td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'withdraws_view', 'id' => $withdraw->getId()], 'View']); ?>
+<?php if ($withdraw->isPending() || $withdraw->isTransferMoney()) : ?>
+                        <?php echo $this->tag->linkTo([['for' => 'withdraws_edit', 'id' => $withdraw->getId()], 'Edit']); ?>
+<?php endif; ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Init list filters and search actions
+        gridFilter.init('<?php echo $this->url->get(['for' => 'withdraws_list']); ?>');
+
+    });
+</script>

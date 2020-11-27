@@ -1,0 +1,96 @@
+<?php
+
+    use Members\Entity\Member;
+    use Members\Entity\TotalPoints;
+    use Members\Entity\Withdraws;
+
+    /* @var $member Member */
+
+?>
+
+<?php echo $this->partial('members/partials/member-header'); ?>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('members/partials/member-tabs'); ?>
+
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="withdraws_tab">
+
+            <div class="sp27"></div>
+            <div class="fs-3036">Withdraws</div>
+            <div class="sp20"></div>
+
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:85px;">ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th style="width:90px;">Pts</th>
+                        <th style="width:115px;">Amount</th>
+                        <th style="width:125px;">Type</th>
+                        <th style="width:85px;">Date</th>
+                        <th style="width:125px;">Status</th>
+                        <th style="width:65px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+<?php
+    foreach ($paginator as $withdraw) { 
+        /* @var $withdraw Withdraws */
+
+        $member = $withdraw->getMember();
+        /* @var $member Member */
+
+        $totals = $member->getTotalPointsData();
+        /* @var $totals TotalPoints */
+
+        $date = $withdraw->getCreatedAt();
+
+        $availablePts = is_object($totals) ? $totals->getTotalActual() : 0;
+
+        $rowClass = $withdraw->isPending() && $availablePts < $withdraw->getPts() ? 'danger' : '';
+?>
+                    <tr class="<?php echo $rowClass; ?>">
+                        <td><?php echo $withdraw->getId(); ?></td>
+                        <td><?php echo $member->getUsername(); ?></td>
+                        <td><?php echo $member->getEmail(); ?></td>
+                        <td><?php echo $withdraw->getPts(); ?></td>
+                        <td><?php echo sprintf('%s %s', $withdraw->getAmount(), $withdraw->getCurrency()); ?></td>
+                        <td><?php echo $withdraw->getTypeLabel(); ?></td>
+                        <td><?php if (is_object($date)) : ?>
+                            <div class="fs-1214"><?php echo $date->format('d/m/y'); ?></div>
+                            <div class="fs-1214"><?php echo $date->format('H:i:s'); ?></div>
+                        <?php else :
+                                echo '-';
+                            endif;
+                        ?></td>
+                        <td>
+                            <?php echo $this->withdrawStatus->table($withdraw); ?>
+                        </td>
+                        <td>
+                            <div class="links">
+                                <?php echo $this->tag->linkTo([['for' => 'withdraws_view', 'id' => $withdraw->getId()], 'View', 'target' => '_blank']); ?>
+<?php if ($withdraw->isPending() || $withdraw->isTransferMoney()) : ?>
+                                <?php echo $this->tag->linkTo([['for' => 'withdraws_edit', 'id' => $withdraw->getId()], 'Edit', 'target' => '_blank']); ?>
+<?php endif; ?>
+                            </div>
+                        </td>
+                    </tr>
+<?php } ?>
+                </tbody>
+            </table>
+
+            <div class="sp50"></div>
+            <div class="table_footer">
+                <?php echo $this->gridPager->links($paginator, [], $currentPage, $perPage); ?>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="sp75"></div>
+</div>

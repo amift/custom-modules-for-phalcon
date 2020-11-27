@@ -1,0 +1,208 @@
+<?php
+
+    use Members\Entity\Member;
+    use Members\Entity\TotalPoints;
+    use Members\Entity\Withdraws;
+    use Members\Tool\Confirmed;
+
+    /* @var $withdraw Withdraws */
+
+    $member = $withdraw->getMember();
+    /* @var $member Member */
+
+    $totals = $member->getTotalPointsData();
+    /* @var $totals TotalPoints */
+
+    $availablePts = is_object($totals) ? $totals->getTotalActual() : 0;
+
+    $isDanger = $withdraw->isPending() && $availablePts < $withdraw->getPts() ? true : false;
+
+    $date = $withdraw->getCreatedAt();
+
+?>
+
+<?php echo $this->partial('withdraws/partials/withdraw-header'); ?>
+
+<div class="container">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+<?php if (isset($error) && $error !== '') :  ?>
+    <div class="alert0_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert0_cont"><span aria-hidden="true">&times;</span></button>
+            <div><?php echo $error; ?></div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ($isDanger) :  ?>
+    <div class="alert1_cont">
+        <div class="sp12"></div>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-onclick-remove=".alert1_cont"><span aria-hidden="true">&times;</span></button>
+            <div>Seems actual member points is less than requested points to withdraw.</div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('withdraws/partials/withdraw-tabs'); ?>
+
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="overview_tab">
+
+            <table class="twocol_r400"><tbody><tr>
+                <td class="leftcol pb0">
+
+                    <div class="twocol_border p29 col1pl0">
+                        <div class="col1" style="min-height:500px;">
+
+                            <div class="sp27"></div>
+                            <h2>Withdraw Request Info</h2>
+                            <div class="sp21"></div>
+                            <table class="table-twocol sz-141824 c2all c1w-135-5"><tbody>
+                                <tr>
+                                    <td>ID</td>
+                                    <td><b><?php echo $withdraw->getId(); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Date</td>
+                                    <td><b><?php echo is_object($date) ? $date->format('d/m/Y H:i:s') : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Points</td>
+                                    <td><b><?php echo $withdraw->getPts(); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Amount</td>
+                                    <td><b><?php echo sprintf('%s %s', $withdraw->getAmount(), $withdraw->getCurrency()); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Type</td>
+                                    <td><b><?php echo $withdraw->getTypeLabel(); ?></b></td>
+                                </tr>
+<?php if ($withdraw->isTypePayPal()) : ?>
+                                <tr>
+                                    <td>PayPal email</td>
+                                    <td><b><?php echo $withdraw->getPaypalEmail() !== null ? $withdraw->getPaypalEmail() : '-'; ?></b></td>
+                                </tr>
+<?php endif; ?>
+<?php if ($withdraw->isTypeBankTransfer()) : ?>
+                                <tr>
+                                    <td>Bank Name</td>
+                                    <td><b><?php echo $withdraw->getBankNameLabel() !== null ? $withdraw->getBankNameLabel() : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Bank Account</td>
+                                    <td><b><?php echo $withdraw->getBankAccount() !== null ? $withdraw->getBankAccount() : '-'; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Receiver Name</td>
+                                    <td><b><?php echo $withdraw->getReceiverName() !== null ? $withdraw->getReceiverName() : '-'; ?></b></td>
+                                </tr>
+<?php endif; ?>
+                            </tbody></table>
+                            <div class="sp24"></div>
+
+                        </div>
+                        <div class="col2">
+
+<?php if (!$withdraw->isCompleted()) : ?>
+
+                            <?php
+                                echo $form->openTag($action, [
+                                    'method'  => 'post',
+                                    'name'    => 'frmWithdraw',
+                                    'id'      => 'frmWithdraw'
+                                ]);
+                            ?>
+                                <?php echo $form->render("id"); ?>
+                                <?php echo $form->render("csrf"); ?>
+
+                                <div class="sp27"></div>
+                                <h2>Transaction Info</h2>
+                                <div class="sp21"></div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <?php echo $form->renderWithLabel('state'); ?>
+                                    </div>
+                                </div>
+                                <div class="sp7 blockTransactionDetails"></div>
+                                <div class="row blockTransactionDetails">
+                                    <div class="col-lg-12">
+                                        <?php echo $form->renderWithLabel('transactionNumber'); ?>
+                                    </div>
+                                </div>
+                                <div class="sp7 blockTransactionDetails"></div>
+                                <div class="row blockTransactionDetails">
+                                    <div class="col-lg-12">
+                                        <?php echo $form->renderWithLabel('transactionDate'); ?>
+                                    </div>
+                                </div>
+                                <div class="sp7 blockCancelationDetails"></div>
+                                <div class="row blockCancelationDetails">
+                                    <div class="col-lg-12">
+                                        <?php echo $form->renderWithLabel('reason'); ?>
+                                    </div>
+                                </div>
+
+                            <?php echo $form->closeTag(); ?>
+
+                            <div class="sp24"></div>
+<?php endif; ?>
+
+                        </div>
+                    </div>
+
+                </td>
+            </tr></tbody></table>
+
+        </div>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        showHideRelatedFields();
+
+        // Handle save button
+        $('#btnSave').click(function(e){
+            e.preventDefault();
+            $('#frmWithdraw input').each(function() {
+                $(this).removeAttr('disabled');
+            });
+            $('#frmWithdraw select').each(function() {
+                $(this).removeAttr('disabled').selectpicker('refresh');
+            });
+            $("#frmWithdraw").submit();
+        });
+
+        // Handle source change
+        $("#state_elem").change(function() {
+            showHideRelatedFields();
+        });
+
+    });
+
+    function showHideRelatedFields()
+    {
+        var id = parseInt($("#state_elem").find(":selected").val());
+        if (id === 3) {
+            $('.blockCancelationDetails').hide();
+            $('.blockTransactionDetails').show();
+        } else if (id === 4) {
+            $('.blockTransactionDetails').hide();
+            $('.blockCancelationDetails').show();
+        } else {
+            $('.blockCancelationDetails').hide();
+            $('.blockTransactionDetails').hide();
+        }
+    }
+</script>

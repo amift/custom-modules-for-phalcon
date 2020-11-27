@@ -1,0 +1,109 @@
+<?php
+
+use Translations\Tool\Group;
+
+$this->translator->setGroup(Group::MEMBERS);
+
+?>
+
+        <div class="col-md-12 col-sm-12 col-xs-12 heading">
+            <h1><?php echo $this->translator->trans('profile_h1_my_profile', 'Mans profils'); ?></h1>
+            <ul class="sub-nav">
+                <li>
+                    <a href="<?php echo $this->url->get(['for' => 'member_profile']); ?>" title="<?php echo $this->translator->trans('menu_profile_general', 'Mani Dati'); ?>" class="active"><?php echo $this->translator->trans('menu_profile_general', 'Mani Dati'); ?></a>
+                </li><li>
+                    <a href="<?php echo $this->url->get(['for' => 'member_earnings']); ?>" title="<?php echo $this->translator->trans('menu_profile_earnings', 'Peļņa'); ?>"><?php echo $this->translator->trans('menu_profile_earnings', 'Peļņa'); ?></a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12 overall">
+            <h2><?php echo $this->translator->trans('profile_h2_data', 'Dati'); ?></h2>
+            <div class="container-fluid">
+                <div class="row form-group">
+                    <div class="col-md-5 col-sm-6 col-xs-6 title"><?php echo $this->translator->trans('lbl_username', 'Lietotāja vārds'); ?></div>
+                    <div class="col-md-7 col-sm-6 col-xs-6 dd"><?php echo $member->getUsername(); ?></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-5 col-sm-6 col-xs-6 title"><?php echo $this->translator->trans('lbl_email', 'E-pasts'); ?></div>
+                    <div class="col-md-7 col-sm-6 col-xs-6 dd"><?php echo $member->getEmail(); ?></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-5 col-sm-6 col-xs-6 title"><?php echo $this->translator->trans('lbl_articles_count', 'Publikāciju skaits'); ?></div>
+                    <div class="col-md-7 col-sm-6 col-xs-6 dd amount"><?php echo is_object($member->getArticles()) ? $member->getArticles()->count() : '0'; ?></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-5 col-sm-6 col-xs-6 title"><?php echo $this->translator->trans('lbl_points_total_earned', 'Nopelnītie punkti'); ?></div>
+                    <div class="col-md-7 col-sm-6 col-xs-6 dd amount"><?php echo is_object($member->getTotalPointsData()) ? $member->getTotalPointsData()->getTotalEarned() : '-'; ?></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-5 col-sm-6 col-xs-6 title"><?php echo $this->translator->trans('lbl_points_total_withdrawed', 'Apmainītie punkti'); ?></div>
+                    <div class="col-md-7 col-sm-6 col-xs-6 dd amount"><?php echo is_object($member->getTotalPointsData()) ? $member->getTotalPointsData()->getTotalWithdrawed() : '-'; ?></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-5 col-sm-6 col-xs-6 title"><?php echo $this->translator->trans('lbl_points_total_actual', 'Pieejamie punkti'); ?></div>
+                    <div class="col-md-7 col-sm-6 col-xs-6 dd points"><?php echo is_object($member->getTotalPointsData()) ? $member->getTotalPointsData()->getTotalActual() : '-'; ?></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-5 col-sm-6 col-xs-6 title"><?php echo $this->translator->trans('lbl_password', 'Parole'); ?></div>
+                    <div class="col-md-7 col-sm-6 col-xs-6 dd">
+                        <a href="javascript:;" data-toggle="modal" data-target="#NewPassword" title="<?php echo $this->translator->trans('link_text_change_password', 'Izmainīt paroli'); ?>"><?php echo $this->translator->trans('link_text_change_password', 'Izmainīt paroli'); ?></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 add-new">
+                        <a href="<?php echo $this->url->get(['for' => 'article_add_textual']); ?>" title="<?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu', 'Global'); ?>"><?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu', 'Global'); ?></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-sm-6 col-xs-12 overall">
+            <h2><?php echo $this->translator->trans('profile_h2_articles_history', 'Publikāciju vēsture'); ?></h2>
+<?php
+    if (count($paginator) > 0) :
+?>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th><?php echo $this->translator->trans('profile_h2_articles_th_date', 'Datums'); ?></th>
+                            <th><?php echo $this->translator->trans('profile_h2_articles_th_category', 'Kategorija'); ?></th>
+                            <th><?php echo $this->translator->trans('profile_h2_articles_th_title', 'Publikācija'); ?></th>
+                            <th><?php echo $this->translator->trans('profile_h2_articles_th_status', 'Statuss'); ?></th>
+                            <th><?php echo $this->translator->trans('profile_h2_articles_th_points', 'Punkti'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+<?php
+        foreach ($paginator as $article) {
+            $stateLabel = $article->getStateLabel();
+?>
+                        <tr>
+                            <td class="date"><?php echo $article->getProfileViewDate(); ?></td>
+                            <td class="article"><?php echo is_object($article->getCategoryLvl1()) ? $article->getCategoryLvl1()->getTitle() : '-'; ?></td>
+                            <td class="article"><?php echo $article->getTitle(); ?></td>
+                            <td class="<?php echo $article->getFrontendStateClass(); ?>"><?php echo $this->translator->trans('lbl_article_status_'.$stateLabel, $stateLabel); ?></td>
+                            <td class="points"><?php echo is_object($article->getPoints()) ? $article->getPoints()->getPtsTotalValue() : '0'; ?></td>
+                        </tr>
+<?php   } ?>
+                    </tbody>
+                </table>
+            </div>
+<?php
+        echo $this->gridPager->links($fullUrl, $paginator, $page, $perPage);
+    else :
+?>
+            <h3><?php echo $this->translator->trans('lbl_articles_history_no_rows', 'Pašlaik nav nevienas publikācijas'); ?></h3>
+<?php
+    endif;
+?>
+        </div>
+
+        <div class="modal fade" id="NewPassword" tabindex="-1" role="dialog" aria-labelledby="NewPassword">
+            <div class="modal-dialog new-pass">
+                <div class="modal-content" id="popupBodyChangePassword">
+                    <?php echo $this->memberPopupForms->renderChangePassword(); ?>
+                </div>
+            </div>
+        </div>
+
+<?php $this->translator->unsetGroup(); ?>

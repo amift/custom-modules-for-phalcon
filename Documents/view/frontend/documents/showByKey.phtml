@@ -1,0 +1,18 @@
+
+<?php if (isset($loadHowToBlock) && $loadHowToBlock) : ?>
+        <?php echo $document['content']; ?>
+<?php else : ?>
+        <div class="col-md-8 col-sm-10 col-xs-12 content">
+            <h1><?php echo $document['title']; ?></h1>
+            <?php echo $document['content']; ?>
+        </div>
+        <!--<div class="col-md-4 col-sm-2 col-xs-12 right-side">
+            <div class="banners">
+                <div class="single-banner banner160x600px">
+                    <a href="/" title="<?php echo $this->translator->trans('link_text_learn_more', 'Uzzini vairāk'); ?>">
+                        <img src="/assets/img/160x0600px-blank.jpg" border="0" />
+                    </a>
+                </div>
+            </div>
+        </div>-->
+<?php endif; ?>

@@ -1,0 +1,116 @@
+<?php
+
+    use Documents\Entity\Document;
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+            <?php echo $this->tag->linkTo([['for' => 'documents_add'], 'Add new', 'class' => 'btn btn-default w-95']); ?>
+        </div>
+        <h1>Documents</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('documents/partials/list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:175px;">Key</th>
+                <th>Title</th>
+                <th>Parent</th>
+                <th>Childrens</th>
+                <th style="width:85px;">Status</th>
+                <th style="width:95px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    foreach ($paginator as $document) {
+        /* @var $document Document */
+
+        $childrens = [];
+        foreach ($document->getChildrens() as $children) {
+            /* @var $document Document */
+            $childrens[] = $children->getTitle();
+        }
+
+        $parent = $document->getParent();
+        /* @var $parent Document */
+
+        $parentInfo = '-';
+        if (is_object($parent)) {
+            $parentInfo = $parent->getTitle();
+            $root = $parent->getParent();
+            if (is_object($root)) {
+                $parentInfo = sprintf('%s (%s)', $parent->getTitle(), $root->getTitle());
+            }
+        }
+?>
+            <tr>
+                <td><?php echo $document->getKey(); ?></td>
+                <td><?php echo $document->getTitle(); ?></td>
+                <td><?php echo $parentInfo; ?></td>
+                <td><?php echo count($childrens) > 0 ? implode(', ', $childrens) : '-'; ?></td>
+                <td><?php echo $this->enableStatus->table($document); ?></td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'documents_edit', 'id' => $document->getId()], 'Edit']); ?>
+                        &nbsp; 
+                        <?php echo $this->tag->linkTo([['for' => 'documents_delete', 'id' => $document->getId()], 'Delete', 'class' => 'delete']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<style>
+    .fs-1214 p {font-size: 12px; line-height: 15px;}
+</style>
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Init list filters and search actions
+        gridFilter.init('<?php echo $this->url->get(['for' => 'documents_list']); ?>');
+
+        // Trigger DELETE click
+        $('.table').on('click', 'a.delete', function(e) {
+            e.preventDefault();
+            var href = $(this).attr('href');
+            bootbox.confirm('Are you sure?', function(result) {
+                if (result === true) {
+                    document.location.href = href;
+                }
+            });
+        });
+
+    });
+</script>

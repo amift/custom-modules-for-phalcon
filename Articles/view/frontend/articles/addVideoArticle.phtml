@@ -1,0 +1,145 @@
+<?php
+
+    use Translations\Tool\Group;
+
+    $this->translator->setGroup(Group::ARTICLES);
+
+?>
+
+        <div class="col-md-9 col-sm-8 col-xs-12 form" id="addArticleBlock">
+<?php echo $this->partial('articles/partials/addArticleTopInfo'); ?>
+
+            <h1><?php echo $this->translator->trans('add_video_article_title', 'Pievienot ziņu'); ?></h1>
+<?php echo $this->partial('articles/partials/addArticleNotAuthorised'); ?>
+
+            <div class="form-group">
+                <label><?php echo $this->translator->trans('lbl_article_type', 'Ziņas veids'); ?></label>
+                <span class="dd"><?php echo $this->translator->trans('lbl_article_type_info_text', 'Izvēlieties ziņas veidu, kuru vēlaties publicēt'); ?></span>
+                <div class="select-type">
+                    <span class="check" onclick="doRedirect('<?php echo $this->url->get(['for' => 'article_add_textual']); ?>');"><i class="fa fa-check"></i></span><?php echo $this->translator->trans('article_type_text', 'Ziņa'); ?>
+                </div><div class="select-type checked">
+                    <span class="check"><i class="fa fa-check"></i></span><?php echo $this->translator->trans('article_type_video', 'Video'); ?>
+                </div>
+            </div>
+
+        <?php
+            echo $form->openTag($action, [
+                'method'  => 'post',
+                'name'    => 'frmAddArticle',
+                'id'      => 'frmAddArticle'
+            ]);
+        ?>
+            <?php echo $form->render("id"); ?>
+
+                <div class="form-group">
+                    <label><?php echo $this->translator->trans('lbl_article_category', 'Kategorija<span class="req">*</span>'); ?></label>
+                    <div class="container-fluid upload-photo">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4 col-xs-12 col">
+                                <span class="dd"><?php echo $this->translator->trans('lbl_article_category_sport', 'Sporta veids'); ?></span>
+                                <div class="input">
+                                    <?php echo $form->render('categoryLvl1'); ?>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4 col-xs-12 col">
+                                <span class="dd"><?php echo $this->translator->trans('lbl_article_category_sport_league_championat', 'Līga / Čempionāts / Sporta notikums'); ?></span>
+                                <div class="input">
+                                    <?php echo $form->render('categoryLvl2'); ?>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4 col-xs-12 col" id="categoryLvl3Block">
+                                <span class="dd"><?php echo $this->translator->trans('lbl_article_category_sport_league_season', 'Sezona'); ?></span>
+                                <div class="input">
+                                    <?php echo $form->render('categoryLvl3'); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="alert-message hide">Error message</span>
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo $this->translator->trans('lbl_article_title', 'Virsraksts<span class="req">*</span>'); ?></label>
+                    <span class="dd"><?php echo $this->translator->trans('lbl_article_title_info_text', 'Jāsatur no 20 līdz 140 simboliem'); ?></span>
+                    <div class="input">
+                        <span class="symbol-left" id="title_elem_count">140</span>
+                        <?php echo $form->render('title'); ?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo $this->translator->trans('lbl_article_video', 'Video'); ?></label>
+                    <div class="container-fluid upload-photo">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-4 col-xs-12 col">
+                                <span class="dd"><?php echo $this->translator->trans('lbl_article_media_author', 'Autors'); ?></span>
+                                <div class="input">
+                                    <?php echo $form->render('mediaSourceName'); ?>
+                                </div>
+                            </div>
+                            <div class="col-md-9 col-sm-8 col-xs-12 col">
+                                <span class="dd"><?php echo $this->translator->trans('lbl_article_video', 'Video resurss'); ?></span>
+                                <div class="input">
+                                    <?php echo $form->render('video'); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo $this->translator->trans('lbl_article_summary', 'Īss ziņas apraksts<span class="req">*</span>'); ?></label>
+                    <span class="dd"><?php echo $this->translator->trans('lbl_article_title_info_summary', 'Jāsatur no 140 līdz 300 simboliem'); ?></span>
+                    <div class="input">
+                        <span class="symbol-left" id="summary_elem_count">300</span>
+                        <?php echo $form->render('summary'); ?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><?php echo $this->translator->trans('lbl_article_source', 'Ziņas avots<span class="req">*</span>'); ?></label>
+                    <span class="dd"><?php echo $this->translator->trans('lbl_article_title_info_source', 'Pilna adrese uz pirmavotu. Bez adreses ziņas nevar publicēt.'); ?></span>
+                    <div class="input">
+                        <?php echo $form->render('sourceUrl'); ?>
+                    </div>
+                </div>
+
+            <?php echo $form->closeTag(); ?>
+
+<?php echo $this->partial('articles/partials/addArticleBottomInfo'); ?>
+
+<?php if ($this->auth->isAuthorised()) : ?>
+    <?php if (is_object($member) && !$member->isBannedPosting()) : ?>
+            <div class="container-fluid form-sub-nav">
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-6 preview">
+                        <a href="javascript:;" id="btnPreviewArticle" title="<?php echo $this->translator->trans('btn_preview_article', 'Priekšskatījums'); ?>"><i class="fa fa-eye"></i><?php echo $this->translator->trans('btn_preview_article', 'Priekšskatījums'); ?></a>
+                    </div>
+                    <div class="col-md-6 col-sm-6 col-xs-6 publish">
+                        <a href="javascript:;" id="btnSaveArticle" title="<?php echo $this->translator->trans('btn_save_article', 'Pievienot'); ?>" class="publish"><?php echo $this->translator->trans('btn_save_article', 'Pievienot'); ?></a>
+                    </div>
+                </div>
+            </div>
+    <?php endif; ?>
+<?php endif; ?>
+
+        </div>
+        <div class="col-md-3 col-sm-4 col-xs-12 steps">
+            <h2><?php echo $this->translator->trans('add_article_side_title', 'Svarīgi'); ?></h2>
+            <span class="step">
+                <span class="nr">1</span><?php echo $this->translator->trans('add_article_side_info_1_title', 'Noteikti ir jābūt avotam'); ?>
+            </span>
+            <p><?php echo $this->translator->trans('add_article_side_info_1_text', 'Katrai publicētajai ziņai ir jābut avotam: attiecīgajā laukā jānorāda tieša saite uz lapu ar konkrēto informāciju. Tam ir jābūt pirmavotam, nevis kāds portāls kurš jau ir pārpublicējis.'); ?></p>
+            <span class="step">
+                <span class="nr">2</span><?php echo $this->translator->trans('add_article_side_info_3_title', 'Ziņai ir jābūt aktuālai'); ?>
+            </span>
+            <p><?php echo $this->translator->trans('add_article_side_info_3_text', 'Nav vēlams publicēt ziņas, ja kopš publicēsanas pirmavotā ir pagājušas vairāk kā 24 stundas. Nedublējiet ziņas, kas jau ir publicētas, attiecīgi vispirms pārliecinieties, ka raksts jau nav pievienots AllSports.lv portālā.'); ?></p>
+            <span class="step">
+                <span class="nr">3</span><?php echo $this->translator->trans('add_article_side_info_5_title', 'Bez spama'); ?>
+            </span>
+            <p><?php echo $this->translator->trans('add_article_side_info_5_text', 'Stingri aizliegti reklāmraksti, bez iepriekšējas vienošanās ar AllSports.lv administrāciju. Tāpat nav atļautas saites uz citiem resursiem ziņas tekstā. Ziņas ne par profesionālo sportu tiks uzskatītas par neatbilstošām.'); ?></p>
+            <span class="step">
+                <span class="nr"><i class="fa fa-exclamation-triangle"></i></span><?php echo $this->translator->trans('add_article_side_info_warning_title', 'Noteikumu pārkāpums'); ?>
+            </span>
+            <p><?php echo $this->translator->trans('add_article_side_info_warning_text', 'Noteikumu neievērošana var novest līdz lietotāja konta daļējai vai pilnīgai bloķēšanai.'); ?></p>
+        </div>

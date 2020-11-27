@@ -1,0 +1,128 @@
+<?php
+
+    use Common\Tool\Enable;
+    use Forum\Entity\ForumCategory;
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+            <?php echo $this->tag->linkTo([['for' => 'forum_categories_add'], 'Add new', 'class' => 'btn btn-default w-95']); ?>
+        </div>
+        <h1>Forum Categories</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('categories/partials/list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Parent</th>
+                <th>Childrens</th>
+                <th style="width:125px;">Ordering</th>
+                <th style="width:115px;">Status</th>
+                <th style="width:65px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    $total = count($paginator);
+    $current = 0;
+    foreach ($paginator as $category) {
+        /* @var $category ForumCategory */
+        
+        $current++;
+
+        $childrens = [];
+        foreach ($category->getChildrens() as $children) {
+            /* @var $children ForumCategory */
+            $childrens[] = $children->getTitle();
+        }
+
+        $parent = $category->getParent();
+        /* @var $parent ForumCategory */
+
+        $parentInfo = '-';
+        if (is_object($parent)) {
+            $parentInfo = $parent->getTitle();
+            $root = $parent->getParent();
+            if (is_object($root)) {
+                $parentInfo = sprintf('%s (%s)', $parent->getTitle(), $root->getTitle());
+            }
+        }
+?>
+            <tr>
+                <td><?php echo $category->getTitle(); ?></td>
+                <td><?php echo $parentInfo; ?></td>
+                <td><?php echo count($childrens) > 0 ? implode(', ', $childrens) : '-'; ?></td>
+                <td>
+                    <div style="float:left; width:45px;"><?php echo $category->getOrdering(); ?></div>
+                <?php  if ($filters['parent'] !== null && (string)$filters['parent'] !== '') { ?>
+                    <div style="float:left; width:53px; text-align:center;">
+                    <?php if ($current > 1) : ?>
+                        <button type="button" class="btn btn-default btn-xs ordering" data-direction="up" data-id="<?php echo $category->getId(); ?>">
+                            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                        </button>
+                    <?php endif; ?>
+                    <?php if ($current < $total) : ?>
+                        <button type="button" class="btn btn-default btn-xs ordering" data-direction="down" data-id="<?php echo $category->getId(); ?>">
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        </button>
+                    <?php endif; ?>
+                    </div>
+                <?php } ?>
+                </td>
+                <td><?php echo $this->enableStatus->table($category); ?></td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'forum_categories_edit', 'id' => $category->getId()], 'Edit']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Init list filters and search actions
+        gridFilter.init('<?php echo $this->url->get(['for' => 'forum_categories_list']); ?>');
+
+        // Trigger ordering click
+        $('.table').on('click', 'button.ordering', function(e) {
+            e.preventDefault();
+            gridFilter.changeOrdering($(this).data('id'), $(this).data('direction'));
+        });
+
+    });
+
+</script>

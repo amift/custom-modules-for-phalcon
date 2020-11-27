@@ -1,0 +1,17 @@
+<?php
+
+use Translations\Tool\Group;
+
+$this->translator->setGroup(Group::ARTICLES);
+
+?>
+        <div class="col-md-12 col-sm-12 col-xs-12 congratulations">
+            <i class="fa fa-smile-o"></i>
+            <h1><?php echo $this->translator->trans('article_text_added_heading', 'Raksts pievienots!'); ?></h1>
+            <span class="dd">
+                <?php echo $this->translator->trans('article_text_added_info_text', 'Paldies, raksts ir veiksmīgi pievienots!'); ?>
+            </span>
+            <a href="<?php echo $this->url->get(['for' => '/']); ?>" class="back" title="<?php echo $this->translator->trans('link_text_startpage', 'Sākumlapa'); ?>"><?php echo $this->translator->trans('link_text_go_to_homepage', 'Iet uz galveno sadaļu'); ?></a>
+            <a href="<?php echo $this->url->get(['for' => 'article_add_textual']); ?>" class="back" title="<?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu'); ?>"><?php echo $this->translator->trans('link_text_go_to_add_article', 'Pievienot citu ziņu'); ?></a>
+        </div>
+<?php $this->translator->unsetGroup(); ?>

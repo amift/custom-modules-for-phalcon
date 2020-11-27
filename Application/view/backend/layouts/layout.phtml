@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta id="Viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=10.0">
+        <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <title>AllSports.lv</title>
+        <meta name="description" content="AllSports.lv" />
+        <meta name="keywords" content="AllSports.lv" />
+
+        <link rel="icon" href="/favicon.ico">
+
+        <link rel="stylesheet" href="/assets/admin/css/style.css">
+        <link rel="stylesheet" href="/assets/admin/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/admin/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/assets/admin/css/bootstrap-datetimepicker.min.css" />
+        <link rel="stylesheet" href="/assets/admin/css/bootstrap-multiselect.css" />
+        <link rel="stylesheet" href="/assets/admin/css/bootstrap-select.min.css" />
+        <link rel="stylesheet" href="/assets/admin/css/css.css">
+        <!--<link rel="stylesheet" href="/assets/admin/css/css-additional.css">-->
+        <link rel="stylesheet" href="/assets/admin/css/css-extra.css">
+        <link rel="stylesheet" href="/assets/admin/css/flags.css">
+        <link rel="stylesheet" href="/assets/admin/css/typeaheadjs.css">
+
+        <script src="/assets/admin/js/jquery.min.js"></script>
+        <script src="/assets/admin/js/moment.min.js"></script>
+        <script src="/assets/admin/js/jquery-ui.min.js"></script>
+        <script src="/assets/admin/js/bootstrap.min.js"></script>
+        <script src="/assets/admin/js/bootstrap-multiselect.js"></script>
+        <script src="/assets/admin/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="/assets/admin/js/bootstrap-select.min.js"></script>
+        <script src="/assets/admin/js/bootbox.min.js"></script>
+        <script src="/assets/admin/js/typeahead/typeahead.bundle.min.js"></script>
+        <script src="/assets/admin/js/js.js"></script>
+        <script src="/assets/admin/js/functions.js"></script>
+
+    </head>
+    <body>
+
+        <section id="page">
+            <header>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <a href="<?php echo $this->url->get(['for' => '/']); ?>" class="logo"><img height="33px;" src="/assets/admin/img/allsports-admin-logo.png"></a>
+                            <nav>
+                                <!--<div class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dashboard</a>
+                                    <ul class="dropdown-menu" role="menu" id="op_menu_items">
+                                        <li><a href="#">Dashboard</a></li>
+                                    </ul>
+                                </div>-->
+
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Modules<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu" id="config_menu_items">
+                                        <li><a href="<?php echo $this->url->get(['for' => 'article_categories_list']); ?>">Categories</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'articles_list']); ?>">Articles</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'polls_list']); ?>">Polls</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'all_comments_list']); ?>">Comments</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'reported_comments_list']); ?>">Reported Comments</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'forum_categories_list']); ?>">Forum Categories</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'forum_topics_list']); ?>">Forum Topics</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'forum_replies_list']); ?>">Forum Replies</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'forum_reported_replies_list']); ?>">Forum Reported Replies</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'members_list']); ?>">Members</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'withdraws_list']); ?>">Withdraw requests</a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Statistics<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu" id="config_menu_items">
+                                        <li><a href="<?php echo $this->url->get(['for' => 'sport_types_list']); ?>">Types</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'sport_leagues_list']); ?>">Leagues</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'sport_teams_list']); ?>">Teams</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'sport_seasons_list']); ?>">Seasons</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'sport_stats_overall_list']); ?>">Stats overall</a></li>
+                                        <!--<li><a href="<?php echo $this->url->get(['for' => 'sport_leagues_list']); ?>">Stats daily</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'sport_leagues_list']); ?>">Stats monthly</a></li>-->
+                                    </ul>
+                                </div>
+
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Content<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu" id="config_menu_items">
+                                        <li><a href="<?php echo $this->url->get(['for' => 'documents_list']); ?>">Documents</a></li>
+                                        <!--<li class="divider"></li>
+                                        <li><a href="/menu/main">Main menu</a></li>
+                                        <li><a href="/menu/footer">Footer menu</a></li>-->
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'translations_list']); ?>">Translations</a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Communication<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu" id="config_menu_items">
+                                        <li><a href="<?php echo $this->url->get(['for' => 'notifications_list']); ?>">Notifications</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'notification_templates_list']); ?>">Notification Templates</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'newsletters_list']); ?>">Newsletters</a></li>
+                                        
+                                    </ul>
+                                </div>
+
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Logs<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu" id="config_menu_items">
+                                        <li><a href="/events-log/backend">Frontend</a></li>
+                                        <li><a href="/events-log/frontend">Backend</a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">System<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu" id="system_menu_items">
+                                        <li><a href="<?php echo $this->url->get(['for' => 'users_list']); ?>">Users</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'bookings_list']); ?>">Bookings</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'settings_list']); ?>">Settings</a></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'cronjobs_list']); ?>">Cron Jobs</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'cache_list']); ?>">Cache</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo $this->url->get(['for' => 'server_info_general']); ?>">Server Info</a></li>
+                                    </ul>
+                                </div>
+                            </nav>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <nav class="pull-right">
+                                <div class="user-logout pull-left" id="user_status_holder">
+                                    <a href="<?php echo $this->url->get(['for' => 'user_profile']); ?>" class="user"><?php echo (string)$this->auth->getAuthorisedUser(); ?></a>
+                                    <a href="<?php echo $this->url->get(['for' => 'user_logout']); ?>" class="logout"><i class="fa fa-power-off"></i></a>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div id="content" class="<?php echo (isset($contentClass) ? $contentClass : ''); ?>">
+                <?php echo $this->getContent(); ?>
+            </div>
+            <div class="footer_push"></div>
+        </section>
+
+        <footer>
+            <div class="container"><div class="row"><div class="col-lg-12">
+                <div class="copy">&copy; 2016 by AllSports.lv | All rights reserved.</div>
+            </div></div></div>
+        </footer>
+
+        <div class="modal fade lg" id="Preview" tabindex="-1" role="dialog" aria-labelledby="Preview">
+            <div class="modal-dialog" style="min-width: 900px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a href="javascript:;" class="close-popup" style="float:right;" data-dismiss="modal" aria-label="Close"><i class="fa fa-remove"></i></a>
+                        <h4 class="modal-title">Newsletter Preview</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid" id="blockPreviewPopupData"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <span class="allsports"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            $(function(){
+                $(document).ajaxStart(function(){$("#dimScreen").show();});
+                $(document).ajaxComplete(function(){$("#dimScreen").hide();});
+            });
+        </script>
+
+        <section class="popup_bg" style="display:none;"></section>
+        <section class="popup" id="erpPopup" style="display:none;"></section>
+        <div id="dimScreen"><img src="/assets/admin/img/ajax-loader.gif"></div>
+
+    </body>
+</html>

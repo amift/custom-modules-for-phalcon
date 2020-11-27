@@ -1,0 +1,140 @@
+<?php
+
+    use Forum\Tool\ForumTopicState;
+    use Common\Tool\Enable;
+
+?>
+
+    <div class="sp15"></div>
+    <div class="table-filters">
+        <div>
+            <div class="filter-group">
+                <label for="state">Status</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "state",
+                        ForumTopicState::getLabels(),
+                        'value' => $filters['state'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '150px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <label for="pinned">Pinned</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "pinned",
+                        Enable::getShortLabels(),
+                        'value' => $filters['pinned'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '100px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <label for="hot">Hot</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "hot",
+                        Enable::getShortLabels(),
+                        'value' => $filters['hot'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '100px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <label for="locked">Locked</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "locked",
+                        Enable::getShortLabels(),
+                        'value' => $filters['locked'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '100px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <div class="form-group w-140">
+                    <label for="createdAtFrom">Date From</label>
+                    <div class="input-group date datepicker_holder createdAtFrom_holder" id="createdAtFrom" data-date-format="DD/MM/YYYY">
+                        <input type="text" class="form-control" name="createdAtFrom" value="<?php echo $filters['createdAtFrom']; ?>" >
+                        <span class="input-group-addon datepicker_icon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="form-group w-140">
+                    <label for="createdAtTo">To</label>
+                    <div class="input-group date datepicker_holder createdAtTo_holder" id="createdAtTo" data-date-format="DD/MM/YYYY">
+                        <input type="text" class="form-control" name="createdAtTo" value="<?php echo $filters['createdAtTo']; ?>" >
+                        <span class="input-group-addon datepicker_icon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <div class="form-group w-100">
+                    <label for="member">Member ID</label>
+                    <input type="text" class="form-control filterField" name="member" value="<?php echo isset($filters['member']) ? $filters['member'] : ''; ?>" >
+                </div>
+            </div>
+            <div class="c"></div>
+            <div class="filter-group">
+                <label for="categoryLvl1">Category 1</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "categoryLvl1",
+                        $categories['categoryLvl1'],
+                        'value' => $filters['categoryLvl1'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '200px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <label for="categoryLvl2">Category 2</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "categoryLvl2",
+                        $categories['categoryLvl2'],
+                        'value' => $filters['categoryLvl2'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '240px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="filter-group pl5">
+                <label for="categoryLvl3">Category 3</label>
+                <div class="sel_w100p sz-38 n">
+                    <?php echo $this->tag->selectStatic([
+                        "categoryLvl3",
+                        $categories['categoryLvl3'],
+                        'value' => $filters['categoryLvl3'],
+                        'class' => 'selectpicker',
+                        'useEmpty' => true,
+                        'emptyText' => 'All',
+                        'data-width' => '240px'
+                    ]); ?>
+                </div>
+            </div>
+            <div class="c"></div>
+            <div class="afterfilter_options">
+                <div class="filter_clear_line">
+                    <a href="javascript:;" class="filter_btn" id="btnFilter">Filter</a>
+                    <a href="javascript:;" class="clear_filter_btn" id="btnClearFilter">Clear filter</a>
+                </div>
+            </div>
+        </div>
+    </div>

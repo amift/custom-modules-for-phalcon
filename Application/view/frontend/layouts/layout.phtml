@@ -1,0 +1,263 @@
+<?php
+
+use Translations\Tool\Group;
+
+$this->translator->setGroup(Group::NOT_SET);
+
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $this->localeHandler->getActualLocale(); ?>" dir="ltr">
+<head>
+    <title><?php echo $this->metaData->getTitle(); ?></title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="<?php echo $this->metaData->getDescription(); ?>" />
+    <meta name="keywords" content="<?php echo $this->metaData->getKeywords(); ?>" />
+    <meta name="author" content="<?php echo $this->metaData->getAuthor(); ?>" />
+    <meta name="copyright" content="<?php echo $this->metaData->getCopyright(); ?>">
+    <meta name="robots" content="<?php echo $this->metaData->getRobotsAsString(); ?>">
+    <?php echo $this->metaData->getGoogleSiteVerificationCodeTag(); ?>
+
+    <?php echo $this->metaData->getFacebookMetaOgTags($this->config->web_url); ?>
+
+    <?php echo $this->metaData->getTwitterMetaOgTags($this->config->web_url); ?>
+
+    <?php echo $this->metaData->getCanonicalLinkTag(); ?><?php echo $this->metaData->getRelatedPreviousLinkTag(); ?><?php echo $this->metaData->getRelatedNextLinkTag(); ?>
+
+    <link type="image/x-icon" rel="icon" href="/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" href="/assets/css/glyphicons.css">
+    <link type="text/css" rel="stylesheet" href="/assets/css/social.css">
+    <link type="text/css" rel="stylesheet" href="/assets/css/style.css?v=41" />
+    <link type="text/css" rel="stylesheet" href="/assets/fonts/font-awesome/css/font-awesome.min.css">
+<!--[if IE 7]>
+    <link type="text/css" rel="stylesheet" href="/assets/fonts/font-awesome/css/font-awesome-ie7.min.css">
+<![endif]-->
+
+    <style type="text/css">
+        .error-message { padding: 4px 10px 0 0; font-size: 12px; color: #ff003c; display: inline-block; vertical-align: top; zoom: 1; }
+        .pt2 { padding-top: 2px; }
+        .has_loading { position: relative; }
+        .has_loading > * { opacity: 0.2; }
+        .has_loading:before { content: ''; opacity: 1; position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 120; background-image: url("/assets/img/preloader.gif"); background-color: transparent; background-repeat: no-repeat; background-position: 50% 50%; }
+        .green-text { color: #00aa32 !important; }
+        .red-text { color: #ff003c !important; }
+        .gray-bg { font-weight: bold; }
+    </style>
+
+    <?php echo $this->metaData->getCustomChareJs($this->config->web_url); ?>
+
+</head>
+<body>
+
+<?php if (!$this->auth->isAuthorised()) : ?>
+    <div class="modal fade" id="Register" tabindex="-1" role="dialog" aria-labelledby="Register">
+        <div class="modal-dialog register">
+            <div class="modal-content" id="popupBodyRegister">
+                <?php echo $this->memberPopupForms->renderRegister(); ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="Login" tabindex="-1" role="dialog" aria-labelledby="Login">
+        <div class="modal-dialog login">
+            <div class="modal-content" id="popupBodyLogin">
+                <?php echo $this->memberPopupForms->renderLogin(); ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ResetPassword" tabindex="-1" role="dialog" aria-labelledby="ResetPassword">
+        <div class="modal-dialog reset-pass">
+            <div class="modal-content" id="popupBodyPwdReminder">
+                <?php echo $this->memberPopupForms->renderPwdReminder(); ?>
+            </div>
+        </div>
+    </div>
+<?php else : ?>
+    <div class="modal fade lg" id="Preview" tabindex="-1" role="dialog" aria-labelledby="Preview">
+        <div class="modal-dialog register">
+            <div class="modal-content">
+<?php
+    if (isset($module) && $module === 'forum') :
+        $previewPopupTitle = $this->translator->trans('preview_popup_form_forum_title', 'Tēmas priekšskatījums');
+        $previewPopupDataUrl = $this->url->get(['for' => 'forum_topic_get_preview']);
+    else :
+        $previewPopupTitle = $this->translator->trans('preview_popup_form_title', 'Ziņas priekšskatījums');
+        $previewPopupDataUrl = $this->url->get(['for' => 'article_get_preview']);
+    endif;
+?>
+                <div class="modal-header">
+                    <a href="javascript:;" class="close-popup" data-dismiss="modal" aria-label="<?php echo $this->translator->trans('popup_btn_close', 'Aizvērt'); ?>"><i class="fa fa-remove"></i></a>
+                    <h4 class="modal-title"><?php echo $previewPopupTitle; ?></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid" id="blockPreviewPopupData" data-previewurl="<?php echo $previewPopupDataUrl; ?>"></div>
+                </div>
+                <div class="modal-footer">
+                    <span class="allsports"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+    <div class="container-fluid header-top">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-8 col-sm-8 col-xs-6 allsports">
+                            <a href="/" alt="<?php echo $this->translator->trans('logo_image_alt', 'AllSports.lv - Vairāk sporta, mazāk reklāmas'); ?>" title="<?php echo $this->translator->trans('logo_image_alt', 'AllSports.lv - Vairāk sporta, mazāk reklāmas'); ?>"></a><h1><?php echo $this->translator->trans('slogan', 'Vairāk sporta, mazāk reklāmas'); ?></h1>
+                        </div>
+<?php
+    if ($this->auth->isAuthorised()) :
+        $member = $this->auth->getAuthorisedUser();
+?>
+                        <div class="col-md-4 col-sm-4 col-xs-6 user-nav logged-in">
+                            <span class="username">
+                                <a href="<?php echo $this->url->get(['for' => 'member_profile']); ?>" title="<?php echo (string)$member; ?>"><?php echo (string)$member; ?></a>
+                                <span class="points"><?php echo sprintf('%sP', is_object($member->getTotalPointsData()) ? $member->getTotalPointsData()->getTotalActual() : '-'); ?></span>
+                                <span class="username-shadow"></span>
+                            </span><a href="<?php echo $this->url->get(['for' => 'member_logout']); ?>" title="<?php echo $this->translator->trans('link_text_logout', 'Iziet'); ?>" class="logout"><i class="fa fa-power-off"></i></a>
+                            <a href="<?php echo $this->url->get(['for' => 'article_add_textual']); ?>" title="<?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu'); ?>" class="add-article">
+                                <span class="title"><?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu'); ?></span>
+                                <span class="icon"><i class="fa fa-plus"></i></span>
+                            </a>
+                        </div>
+<?php else : ?>
+                        <div class="col-md-4 col-sm-4 col-xs-6 user-nav">
+                            <a href="javascript:;" data-toggle="modal" data-target="#Login" class="login" title="<?php echo $this->translator->trans('link_text_login', 'Ienākt'); ?>"><?php echo $this->translator->trans('link_text_login', 'Ienākt'); ?></a><a href="javascript:;" data-toggle="modal" data-target="#Register" class="register" title="<?php echo $this->translator->trans('link_text_register', 'Reģistrēties'); ?>"><?php echo $this->translator->trans('link_text_register', 'Reģistrēties'); ?></a>
+                            <a href="<?php echo $this->url->get(['for' => 'article_add_textual']); ?>" title="<?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu'); ?>" class="add-article">
+                                <span class="title"><?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu'); ?></span>
+                                <span class="icon"><i class="fa fa-plus"></i></span>
+                            </a>
+                        </div>
+<?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid header-bottom" id="js_open_side_nav">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12 categories">
+                            <a href="javascript:void(0);" class="slide-bar-btn js_side_nav">
+                                <i class="fa fa-navicon"></i><i class="fa fa-remove"></i>
+                            </a>
+<?php foreach ($this->menuService->getMenuItems() as $menuItem) { ?>
+                            <div class="sport-type" id="js_sport_type">
+                                <a href="<?php echo sprintf('/%s', $menuItem['slug']); ?>" class="main js_drop_nav"><?php echo $menuItem['title']; ?><i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
+<?php if (count($menuItem['childs']) > 0) { ?>
+                                <ul id="js_open_drop_nav"><?php foreach ($menuItem['childs'] as $childItem) { ?>
+                                    <li><a href="<?php echo sprintf('/%s/%s', $menuItem['slug'], $childItem['slug']); ?>" class="sub"><?php echo ($childItem['image'] !== '' ? '<i class="league-icon"><img src="/media/categories/'.$childItem['image'].'" /></i>' : ''); ?><?php echo $childItem['title']; ?></a></li>
+                                <?php } ?></ul>
+<?php } ?>
+                            </div><?php } ?>
+                            <div class="sport-type" id="js_sport_type">
+                                <a href="<?php echo rtrim($this->url->get(['for' => 'forum_list']), '/'); ?>" class="main forum-tab js_drop_nav"><i class="fa fa-comments"></i><?php echo $this->translator->trans('link_text_forum', 'Forums'); ?><i class="fa fa-angle-down"></i><i class="fa fa-angle-up"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<?php if (isset($loadHowToBlock) && $loadHowToBlock) : ?>
+    <div class="how-to" id="blockHowTo">
+        <div class="container-fluid">
+            <div class="row">
+                <a href="javascript:;" onclick="$('#blockHowTo').fadeOut();" title="<?php echo $this->translator->trans('popup_btn_close', 'Aizvērt'); ?>" class="hide-block"><?php echo $this->translator->trans('popup_btn_close', 'Aizvērt'); ?><span class="circle"><i class="fa fa-remove"></i></span></a>
+                <div class="col-md-4 col-sm-5 col-xs-12 about-project">
+                    <?php echo $this->translator->trans('how_to_info_text', '<h1>AllSports.lv</h1>
+                    <p>AllSports - tā ir... это дружественное сообщество фанатов Латвийского и мирового спорта. Наш девиз - больше спорта, меньше рекламы. Мы хотим создать площадку для болельщиков, а не для рекламодателей. Контент на сайте будет создаваться общими усилиями экспертов и просто рядовых болельщиков.</p>
+                    <p>Любой труд должен быть вознагражден! На AllSports введена внутрення валюта Points. За каждый опубликованный Вами материал будут начислятся пункты, которые в последствии можно будет обменять на Евро. Чем качественне новость, тем больше пунктов можно будет заработать.</p>
+                    <p>В каждой бочке есть ложка дегтя. Для оплаты труда за размещенные новости, а так же для поддержки проекта на AllSports все же будет несколько баннеров. Поверьте нам наслово, их будет несколько :)</p>'); ?>
+                    <a href="<?php echo $this->url->get(['for' => 'article_add_textual']); ?>" title="<?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu'); ?>" class="add-article"><?php echo $this->translator->trans('link_text_add_article', 'Pievienot ziņu'); ?></a>
+                </div>
+                <div class="col-md-8 col-sm-7 col-xs-12 big-three">
+                    <img src="/assets/img/big-three.png" class="img-responsive" border="0" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="easy-steps">
+        <div class="container-fluid">
+
+            <?php echo $this->getContent(); ?>
+        </div>
+    </div>
+<?php else : ?>
+<?php if (isset($enableCoverAdd) && $enableCoverAdd) : ?>
+    <div class="container-fluid<?php echo (isset($contentClass) ? ' ' . $contentClass : ''); ?> cover-ad">
+        <a href="<?php echo $this->url->get(['for' => 'document_how_it_works']); ?>" class="cover-ad-bg">
+            <img src="/assets/img/1920x1080-pievieno.png" />
+        </a>
+        <div class="cover-ad-margin">
+            <div class="row">
+
+                <?php echo $this->getContent(); ?>
+            </div>
+        </div>
+    </div>
+<?php else : ?>
+    <div class="container-fluid<?php echo (isset($contentClass) ? ' ' . $contentClass : ''); ?>">
+        <div class="row">
+
+            <?php echo $this->getContent(); ?>
+        </div>
+    </div>
+<?php endif; ?>
+<?php endif; ?>
+
+
+    <div class="container-fluid footer">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-12 copyrights">
+                            <a href="<?php echo $this->url->get(['for' => 'document_terms']); ?>" title="<?php 
+                                echo $this->translator->trans('footer_link_terms_alt', 'Lietošanas noteikumi'); ?>"><?php 
+                                echo $this->translator->trans('footer_link_terms_text', 'Lietošanas noteikumi'); 
+                            ?></a><span class="separator"></span><a href="<?php echo $this->url->get(['for' => 'document_faq']); ?>" title="<?php 
+                                echo $this->translator->trans('footer_link_faq_alt', 'Jautājumi un atbildes'); ?>"><?php 
+                                echo $this->translator->trans('footer_link_faq_text', 'BUJ'); ?></a><span class="separator"></span><a href="<?php echo $this->url->get(['for' => 'document_how_it_works']); ?>" title="<?php 
+                                echo $this->translator->trans('footer_link_hiw_alt', 'Kā tas strādā?! Jeb portāla darbības princips'); ?>"><?php 
+                                echo $this->translator->trans('footer_link_hiw_text', 'Kā tas strādā?!'); ?></a><span class="separator"></span><?php
+                                echo $this->translator->trans(
+                                    'footer_contact_mail_link', 
+                                    '<a href="mailto:kontakti@allsports.lv" title="Kontakti">kontakti@allsports.lv</a>'
+                                );
+                            ?>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-12 contacts">
+                            <span class="year"><?php echo $this->translator->trans('copyrights_info_text', '2016 © AllSports.lv'); ?></span><?php
+                                echo $this->translator->trans(
+                                    'footer_social_links', 
+                                    '<a href="/" title="Facebook" class="social-btn fb"><i class="fa fa-facebook"></i></a><a href="/" title="Facebook" class="social-btn tw"><i class="fa fa-twitter"></i></a>'
+                                );
+                            ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/min/libs.jquery.js"></script>
+    <script src="/assets/js/min/libs.custom.js?v=41"></script>
+</body>
+</html>
+<?php $this->translator->unsetGroup(); ?>

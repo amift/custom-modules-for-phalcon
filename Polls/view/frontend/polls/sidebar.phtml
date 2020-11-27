@@ -1,0 +1,11 @@
+<?php
+
+    use Polls\Entity\Poll;
+
+    /* @var $poll Poll */
+
+?>
+
+            <div class="questions" id="poll<?php echo $poll->getId(); ?>Block">
+<?php echo $this->pollsRenderer->renderSideBarPollInlinePart($poll); ?>
+            </div>

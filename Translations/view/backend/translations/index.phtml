@@ -1,0 +1,84 @@
+<?php
+
+    use Phalcon\Escaper;
+    use Translations\Entity\Translation;
+
+    $e = new Escaper();
+
+?>
+
+<div id="fixed_original"></div>
+<div class="to_be_fixed" data-position="#fixed_original">
+    <div class="container containsFilterFields">
+        <div class="sp30"></div>
+        <div class="header-controls">
+            <div class="search_cont">
+                <div class="input-group">
+                    <input type="text" id="txtSearch" class="form-control filterField" name="search" placeholder="Search" value="<?php echo $filters['search']; ?>">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </div>
+            <?php //echo $this->tag->linkTo([['for' => 'translations_add'], 'Add new', 'class' => 'btn btn-default w-95']); ?>
+        </div>
+        <h1>Translations</h1>
+        <div class="c sp20"></div>
+    </div>
+</div>
+
+<div class="container containsFilterFields">
+
+    <?php echo $this->flashMessages->render(); ?>
+
+    <?php echo $this->partial('translations/partials/list-filters'); ?>
+
+    <div class="sp24"></div>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th style="width:85px;">ID</th>
+                <th style="width:300px;">Key</th>
+                <th style="width:225px;">Group</th>
+                <th>Value, <?php echo strtoupper($this->localeHandler->getDefaultLocale()); ?></th>
+                <th style="width:65px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+<?php
+    foreach ($paginator as $translation) {
+        /* @var $translation Translation */
+
+?>
+            <tr>
+                <td><?php echo $translation->getId(); ?></td>
+                <td><?php echo $translation->getKey(); ?></td>
+                <td><?php echo $translation->getGroup(); ?></td>
+                <td><?php echo $e->escapeHtml($translation->getTranslatedValue($this->localeHandler->getDefaultLocale())); ?></td>
+                <td>
+                    <div class="links">
+                        <?php echo $this->tag->linkTo([['for' => 'translations_edit', 'id' => $translation->getId()], 'Edit']); ?>
+                    </div>
+                </td>
+            </tr>
+<?php } ?>
+        </tbody>
+    </table>
+
+    <div class="sp50"></div>
+    <div class="table_footer">
+        <?php echo $this->gridPager->links($paginator, $filters, $currentPage, $perPage); ?>
+    </div>
+
+    <div class="sp75"></div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        "use strict";
+
+        // Init list filters and search actions
+        gridFilter.init('<?php echo $this->url->get(['for' => 'translations_list']); ?>');
+
+    });
+</script>

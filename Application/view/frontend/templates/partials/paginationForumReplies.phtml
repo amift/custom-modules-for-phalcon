@@ -1,0 +1,65 @@
+<?php
+    if ($intervalEnd > 0) : 
+        $blockClass = count($pagesInRange) > 1 ? 'col-md-4 col-sm-4 col-xs-12' : 'col-md-12 col-sm-12 col-xs-12';
+?>
+                        <div class="<?php echo $blockClass; ?> filter pagination_numbers" style="text-align: left; padding-left: 10px;">
+                            <?php
+                                echo sprintf(
+                                    $this->translator->trans('paginator_total_info_text_mask', 'Izvadīti <b>%s - %s</b> no <b>%s</b>', 'Global'), 
+                                    $intervalStart, 
+                                    $intervalEnd, 
+                                    $totalCount
+                                );
+                            ?>
+                        </div>
+<?php endif; ?>
+
+<?php
+
+if (count($pagesInRange) > 1) :
+
+    // one page left and to first page
+    $toFirstPageUrl = $onePageLeftUrl = '#';
+    $toFirstPageClass = $onePageLeftClass = '';
+    if ($currentPageNumber > 1) :
+        $toFirstPageUrl = $fullUrl . '?page=1';
+        $onePageLeftUrl = $fullUrl . '?page='. ($currentPageNumber - 1);
+        $this->metaData->setLinkPrev($onePageLeftUrl);
+    else :
+        $toFirstPageClass = $onePageLeftClass = ' class="disabled"';
+    endif;
+    
+    // one page right and to last page
+    $toLastPageUrl = $onePageRightUrl = '#';
+    $toLastPageClass = $onePageRightClass = '';
+    if ($currentPageNumber < $pageCount) :
+        $toLastPageUrl = $fullUrl . '?page=' . $pageCount;
+        $onePageRightUrl = $fullUrl . '?page=' . ($currentPageNumber + 1);
+        $this->metaData->setLinkNext($onePageRightUrl);
+    else :
+        $toLastPageClass = $onePageRightClass = ' class="disabled"';
+    endif;
+?>
+
+                        <div class="col-md-8 col-sm-8 col-xs-12 filter pagination_links" style="text-align: right; padding-right: 10px;">
+
+                            <a href="<?php echo $toFirstPageUrl; ?>">&laquo;</a>
+                            <a href="<?php echo $onePageLeftUrl; ?>">&lsaquo;</a>
+<?php
+    foreach ($pagesInRange as $page) :
+        $page = (int)$page;
+        $pageClass = '';
+        if ((int)$currentPageNumber === (int)$page) {
+            $pageClass = ' class="active"';
+        }
+        //$pageUrl = '#';
+        //if ($currentPageNumber != $page) {
+            $pageUrl = $fullUrl . '?page=' . $page;
+        //}
+?>
+                            <a<?php echo $pageClass; ?> href="<?php echo $pageUrl; ?>"><?php echo $page; ?></a>
+<?php endforeach; ?>
+                            <a href="<?php echo $onePageRightUrl; ?>">&rsaquo;</a>
+                            <a href="<?php echo $toLastPageUrl; ?>">&raquo;</a>
+                        </div>
+<?php endif; ?>
